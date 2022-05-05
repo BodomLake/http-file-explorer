@@ -1,0 +1,22 @@
+{
+  "name": "http-file-explorer",
+  "version": "1.0.0",
+  "description": "http file explorer base on react",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client:dev": "cd client && npm run dev",
+    "server:dev": "cd server && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/BodomLake/http-file-explorer/"
+  },
+  "keywords": [
+    "file-server",
+    "vue3",
+    "antd-vue"
+  ],
+  "author": "BodomLake",
+  "license": "ISC"
+}
