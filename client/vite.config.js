@@ -12,8 +12,11 @@ export default defineConfig({
     Components({
       resolvers: [AntDesignVueResolver()],
     }),
+    // options are passed on to @vue/babel-plugin-jsx
     vueJsx({
-      // options are passed on to @vue/babel-plugin-jsx
+      optimize: true,
+      isCustomElement: true,
+      mergeProps: false,
     }),
     legacy({
       targets: ['defaults', 'not IE 11']
