@@ -75,6 +75,7 @@ function convertToTreeData(data) {
 }
 import {defineComponent, ref} from 'vue';
 import {getReq} from "../utils/request";
+
 export default defineComponent({
 
   setup() {
@@ -144,7 +145,7 @@ export default defineComponent({
   overflow: auto;
 }
 
-::v-deep span.ant-tree-switcher_close {
+:deep span.ant-tree-switcher_close {
   display: none;
 }
 </style>
