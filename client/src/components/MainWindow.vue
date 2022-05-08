@@ -1,5 +1,5 @@
 <template>
-  <a-collapse v-model:activeKey="activeKey">
+  <a-collapse v-model:activeKey="activeKey" style="opacity: 0.8">
     <a-collapse-panel key="0" header="System Information">
       <a-list item-layout="horizontal" :data-source="systemKeys" size="small">
         <template #renderItem="{ item }">

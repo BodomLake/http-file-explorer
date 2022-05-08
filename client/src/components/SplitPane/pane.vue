@@ -5,10 +5,11 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from "vue";
+import {ref} from 'vue'
+
 const props = defineProps({
   className: String,
-  split:String
+  split: String
 });
 const percent = ref(50);
 

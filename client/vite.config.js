@@ -4,6 +4,7 @@ import Components from 'unplugin-vue-components/vite'
 import {AntDesignVueResolver} from 'unplugin-vue-components/resolvers'
 import legacy from '@vitejs/plugin-legacy'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -22,6 +23,11 @@ export default defineConfig({
       targets: ['defaults', 'not IE 11']
     })
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    }
+  },
   server: {
     host: '127.0.0.1',
     port: 3100,

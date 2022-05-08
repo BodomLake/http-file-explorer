@@ -1,17 +1,12 @@
 <script setup>
 import './assets/iconfont.js';
-// import SideBar from "./components/SideBar";
-// import MainWindow from "./components/MainWindow";
-// import {defineComponent} from "vue";
-// defineComponent({
-//   'SideBar' :SideBar,
-//   'MainWindow': MainWindow
-// })
 </script>
 
 <template>
   <div class="layout">
-    <div class="layout-header"></div>
+    <div class="layout-header">
+      <Header></Header>
+    </div>
 
     <div class="layout-middle">
       <div class="layout-sidebar">
@@ -52,6 +47,10 @@ import './assets/iconfont.js';
   height: 85vh;
   border: 1px solid black;
   overflow: auto;
+  background-image: url("assets/iMac.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .layout-footer{
   width: 100vw;

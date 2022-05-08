@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import {computed, defineProps, reactive, ref} from "vue";
+import {computed, reactive, ref} from "vue";
 // 设置props
 const $props = defineProps({
   data: {
@@ -54,13 +54,14 @@ const $props = defineProps({
 })
 //
 const $prop_data = ref($props.data)
-const cpus = computed({
-  get: () => ($prop_data.value).map((cpu, index) => {
-    cpu.index = index;
-    cpu.times = JSON.stringify(cpu.times)
-    return cpu
-  })
-})
+const cpus = computed(
+    () => {
+      ($prop_data.value).map((cpu, index) => {
+        cpu.index = index + 1;
+        cpu.times = JSON.stringify(cpu.times)
+        return cpu
+      })
+    })
 const columns = reactive(
     [
       {

@@ -17,7 +17,7 @@
 import Pane from "./pane.vue";
 import Resizer from "./resizer.vue";
 
-import {computed, defineProps, reactive, ref, defineEmits, toRefs, watch} from "vue";
+import {computed, reactive, ref, toRefs, watch} from "vue";
 
 const props = defineProps({
   minPercent: {
