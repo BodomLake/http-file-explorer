@@ -7,9 +7,9 @@ axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
 // 创建axios实例
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
-  baseURL: "/api",
+  baseURL: process.env.NODE_ENV === 'development' ? "/api" : "/",
   // 超时
-  timeout: process.env.NODE_ENV === 'development' ? 50000 : 100000,
+  timeout: process.env.NODE_ENV === 'development' ? 20000 : 100000,
 });
 
 // 请求拦截器

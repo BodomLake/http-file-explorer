@@ -35,7 +35,7 @@
 </template>
 -->
 <template>
-  <a-table :columns="columns" :data-source="cpus" size="small" :pagination="false"
+  <a-table :columns="columns" :data-source="data" size="small" :pagination="false"
            class="ant-table-striped"
            :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)">
 
@@ -44,31 +44,33 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref} from "vue";
+import {reactive, ref} from "vue";
 // 设置props
-const $props = defineProps({
+const props = defineProps({
   data: {
     type: Array,
     default: []
   }
 })
-//
-const $prop_data = ref($props.data)
-const cpus = computed(
-    () => {
-      ($prop_data.value).map((cpu, index) => {
-        cpu.index = index + 1;
-        cpu.times = JSON.stringify(cpu.times)
-        return cpu
-      })
-    })
+let prop_data = reactive(props.data)
+// 改动reactive变量
+prop_data = (prop_data).map((cpu, index) => {
+  cpu.index = index + 1;
+  cpu.times = (() => {
+        return Object.keys(cpu.times).map(k => {
+          return k.toUpperCase() + ' : ' + cpu.times[k]
+        }).join(' | ')
+      }
+  )()
+  return cpu
+})
 const columns = reactive(
     [
       {
         title: '#',
+        dataIndex: 'index',
         width: 50,
         fixed: 'left',
-        dataIndex: 'index',
       },
       {
         title: '内核名称',

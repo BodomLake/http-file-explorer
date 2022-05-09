@@ -108,7 +108,7 @@ export default {
   methods: {
     getDrives() {
       getReq('/getDrives').then((res) => {
-        console.log(res.data)
+        console.table(res.data)
         let drivers = res.data;
         this.drivers = new Array(drivers.length).fill(new Drive())
         setTimeout(() => {
