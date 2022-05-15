@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "dev ./bin/www",
-    "devstart": "nodemon ./bin/www",
-    "dev": "node-dev ./bin/www"
+    "start": "dev main.js",
+    "devstart": "nodemon main.js",
+    "dev": "node-dev main.js --trace-deprecation"
   },
   "dependencies": {
     "@dropb/diskinfo": "^3.0.0",
@@ -18,10 +18,22 @@
     "iconv-lite": "^0.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
-    "plist": "^3.0.5"
+    "plist": "^3.0.5",
+    "require-dir": "^1.2.0",
+    "systeminformation": "^5.11.15",
+    "cors": "^2.8.5",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/register": "^7.4.4",
+    "@babel/runtime": "^7.4.4"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "node-dev": "^7.2.0",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "express-swagger-generator": "^1.1.17",
+    "swagger-jsdoc": "^7.0.0-rc.6",
+    "swagger-ui-express": "^4.4.0"
   }
 }

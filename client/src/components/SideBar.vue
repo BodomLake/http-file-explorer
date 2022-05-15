@@ -1,6 +1,6 @@
 <template>
   <a-tree :show-line="showLine" :show-icon="showIcon" :tree-data="treeData" :multiple="multiple"
-          @select="onSelect" :fieldNames="fieldNames"
+          @select="onSelect" :fieldNames="fieldNames" class="sidebar"
           :default-expand-all="true" :auto-expand-parent="true" :load-data="loadDataAsync">
     <template #icon="{ dataRef ,key , selected }">
       <my-icon v-if="!dataRef.isFile" className="icon-folder"></my-icon>
@@ -8,12 +8,12 @@
       <my-icon v-else :className="'icon-' + dataRef.type"></my-icon>
     </template>
     <template #title="{ dataRef }">
-      <span>{{ dataRef.name }}</span>
+      <span style="color: crimson;">{{ dataRef.name }}</span>
     </template>
     <!--<template-->
     <!--    #switcherIcon="{active, checked, expanded, loading, selected, halfChecked, title, key, children, dataRef, data, defaultIcon, switcherCls}">-->
     <!--  <component :is="dataRef.isFile ? null : defaultIcon" :class="switcherCls"/>-->
-    <!--</templa  te>-->
+    <!--</template>-->
     <template #switcherIcon="{ dataRef, switcherCls, defaultIcon }">
       <component :is="!dataRef.isLeaf ? defaultIcon : undefined" v-if="!dataRef.isFile"></component>
       <!--<span v-else></span>-->
@@ -84,7 +84,7 @@ export default defineComponent({
     const multiple = ref(false);
     const treeData = ref([])
 
-    getReq("/getDir").then((response) => {
+    getReq("/system/getDir", {absPath: 'd://'}).then((response) => {
       treeData.value = convertToTreeData(response.data)
     });
     const loadDataAsync = (treeNode) => {
@@ -96,7 +96,7 @@ export default defineComponent({
           resolve();
           return;
         } else {
-          getReq("/getDir", {absPath: treeNode.absPath}).then((res) => {
+          getReq("/system/getDir", {absPath: treeNode.absPath}).then((res) => {
             let d = convertToTreeData(res.data)
             console.log('获得新的数据', d)
             nextChildren.push(...d)
@@ -144,8 +144,7 @@ export default defineComponent({
   max-height: 100%;
   overflow: auto;
 }
-
-:deep span.ant-tree-switcher_close {
+/*:deep span.ant-tree-switcher_close {
   display: none;
-}
+}*/
 </style>

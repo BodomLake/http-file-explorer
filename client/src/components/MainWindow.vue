@@ -1,5 +1,5 @@
 <template>
-  <a-collapse v-model:activeKey="activeKey" style="opacity: 0.8">
+  <a-collapse v-model:activeKey="activeKey" style="opacity: 0.9">
     <a-collapse-panel key="0" header="System Information">
       <a-list item-layout="horizontal" :data-source="systemKeys" size="small">
         <template #renderItem="{ item }">
@@ -57,7 +57,7 @@
                     </a-col>
                   </a-col>
                   <a-col :span="8">
-                    {{ getGBUnit(item.avail) }} GB free of {{ getGBUnit(item.size) }} GB
+                    {{ convertToGBUnit(item.avail) }} GB free of {{ convertToGBUnit(item.size) }} GB
                   </a-col>
                 </a-row>
               </template>
@@ -68,11 +68,42 @@
       </a-list>
     </a-collapse-panel>
 
+    <a-collapse-panel key="2" header="NetWork Status">
+      <template v-if="wifiLoading">
+        <a-spin tip="Wifi情况正在获取中..." >
+          <!--<a-alert message="Alert message title"-->
+          <!--         description="Further details about the context of this alert.">-->
+          <!--</a-alert>-->
+        </a-spin>
+      </template>
+      <template v-else>
+        <a-list item-layout="horizontal" :data-source="wifis" size="small">
+          <template #renderItem="{ item }">
+            <a-list-item>
+              <a-list-item-meta>
+                <template #title>
+                  <a-row>
+                    <a-col :span="6"> {{ item.ssid }}</a-col>
+                    <a-col :span="6"> {{ item.bssid }}</a-col>
+                    <a-col :span="6"> {{ item.quality }}</a-col>
+                    <a-col :span="6"> {{ item.frequency }}</a-col>
+                  </a-row>
+                </template>
+              </a-list-item-meta>
+            </a-list-item>
+          </template>
+        </a-list>
+      </template>
+
+
+    </a-collapse-panel>
   </a-collapse>
+
   <a-modal v-model:visible="showModal" :title="title" @ok="handleOk" width="80%">
     <!-- 按照组件名动态渲染模态框的内容 -->
     <component :is="title" :data="detail"></component>
   </a-modal>
+
 </template>
 
 <script>
@@ -95,19 +126,22 @@ export default {
       fsTypeOption: ['Unknown', 'No Root Directory', 'Removable Dick', 'Local Disk', 'Network Drive', 'Compat Disc', 'RAM Disk'],
       systemKeys: ['k'],
       drivers: [],
-      activeKey: '0',
+      activeKey: ['1', '2'],
       showModal: false,
       detail: {},
-      title: 'OS信息'
+      title: 'OS信息',
+      wifis: [],
+      wifiLoading: false,
     }
   },
   mounted() {
     this.getDrives();
-    this.getSystemInfo();
+    this.getBasicSysInfo();
+    this.wifiNetworks();
   },
   methods: {
     getDrives() {
-      getReq('/getDrives').then((res) => {
+      getReq('/system/getDrives').then((res) => {
         console.table(res.data)
         let drivers = res.data;
         this.drivers = new Array(drivers.length).fill(new Drive())
@@ -121,7 +155,7 @@ export default {
       })
     },
     getDrivesByDeviceId(deviceId, attr) {
-      getReq('/getDrivesByAttr', {deviceId, attr}).then((res) => {
+      getReq('/system/getDrivesByAttr', {deviceId, attr}).then((res) => {
         let data = res.data
         console.log(data)
         for (let i = 0; i < this.drivers.length; i++) {
@@ -135,14 +169,24 @@ export default {
         let drivers = res.data;
       })
     },
-    getSystemInfo() {
-      getReq('/getSystem').then((res) => {
+    getBasicSysInfo() {
+      getReq('/system/getList').then((res) => {
         console.log(res.data)
         this.system = res.data;
         this.systemKeys = Object.keys(res.data)
       })
     },
-    getGBUnit(num) {
+    wifiNetworks() {
+      this.wifiLoading = true
+      getReq('/system/wifiNetworks').then((res) => {
+        console.log(res.data)
+        this.wifis = res.data;
+        this.wifiLoading = false
+      }).finally(() => {
+        this.wifiLoading = false
+      })
+    },
+    convertToGBUnit(num) {
       return Math.floor(num / 1024 / 1024 / 1024)
     },
     handleOk() {

@@ -71,7 +71,7 @@ async function getAllDisk() {
         }
         // 对流出的二进制码，按照cp936的编码规则输出字符串
         // buffer作为二进制码流的载体，用 iconv-lite反手给他解码出来
-        let data = iconv.decode(new Buffer(stdout, binaryEncoding), encoding)
+        let data = iconv.decode(new Buffer.from(stdout, binaryEncoding), encoding)
         resolve(data)
       })
     })
@@ -91,7 +91,7 @@ async function getAllDiskOneAttr(id, attr) {
         console.log("root path open failed" + err + stderr);
         return;
       }
-      let out = iconv.decode(new Buffer(stdout, binaryEncoding), encoding)
+      let out = iconv.decode(new Buffer.from(stdout, binaryEncoding), encoding)
       let value = (out.split('\n')[1]).toString().replaceAll('  ','').trim().replaceAll('\r', '')
       resolve({id: id, value: value, attr: attr})
       // console.log(value)
