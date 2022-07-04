@@ -37,7 +37,7 @@
 
 <script>
 
-import MyIcon from "../../MyIcon";
+import MyIcon from "../../MyIcon.vue";
 export default {
   name: "Navigator",
   components: {
