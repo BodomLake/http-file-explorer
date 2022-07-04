@@ -1,5 +1,16 @@
-<script setup>
+<script>
 import './assets/iconfont.js';
+import Header from "./components/windows/Header/Header.vue";
+import SideBar from "./components/windows/SideBar/SideBar.vue";
+import MainWindow from "./components/windows/MainWindow/MainWindow.vue";
+import Navigator from "./components/windows/Navigator/Navigator.vue";
+export default {
+  name: 'app',
+  components: {
+    Navigator,
+    'SideBar':SideBar, 'Header': Header, 'MainWindow':MainWindow
+  }
+}
 </script>
 
 <template>
@@ -7,11 +18,13 @@ import './assets/iconfont.js';
     <div class="layout-header">
       <Header></Header>
     </div>
+    <div class="layout-nav">
+      <Navigator></Navigator>
+    </div>
 
     <div class="layout-middle">
-      <div class="layout-sidebar">
-        <SideBar class=" background"></SideBar>
-        <!--<div class="background"></div>-->
+      <div class="layout-sidebar background">
+        <SideBar></SideBar>
       </div>
       <div class="layout-content">
         <MainWindow></MainWindow>
@@ -30,7 +43,7 @@ import './assets/iconfont.js';
 
 .layout-middle {
   width: 100vw;
-  height: 85vh;
+  height: 81vh;
   display: flex;
   flex-direction: row;
 }
@@ -39,20 +52,25 @@ import './assets/iconfont.js';
   width: 100vw;
   height: 13vh;
 }
+.layout-nav {
+  width: 100vw;
+  height: 4vh;
+}
 
 .layout-sidebar {
   width: 20vw;
-  height: 85vh;
+  height: 81vh;
   border: 1px solid black;
   overflow: auto;
+  background-color: transparent !important;
 }
 
 .layout-content {
   width: 80vw;
-  height: 85vh;
+  height: 81vh;
   border: 1px solid black;
   overflow: auto;
-  background-image: url("assets/iMac.jpg");
+  background-image: url("./assets/iMac.jpg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -64,13 +82,14 @@ import './assets/iconfont.js';
   left: 0;
   z-index: -1;*/
   height: 100%;
-  width: 100%;
-  background-image: url("assets/Beach.jpg");
+/*  width: 100%;*/
+  background-image: url("./assets/Beach.jpg");
   background-position: left top;
   background-size: cover;
   background-repeat: no-repeat;
   font-weight: 400;
-  //background:rgba(255,255,255);
+  /*filter: contrast(1);*/
+  /*filter: drop-shadow(16px 16px 20px blue);*/
 }
 
 .layout-footer {

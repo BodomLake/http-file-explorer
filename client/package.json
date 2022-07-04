@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite -m development",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -12,7 +12,8 @@
     "axios": "^0.27.2",
     "pinia": "^2.0.14",
     "plist": "^3.0.5",
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@vitejs/plugin-legacy": "^1.8.2",

@@ -6,21 +6,21 @@
           <my-icon class-name="icon-file"></my-icon>
           <span>File</span>
         </template>
-        <p>Content of Tab Pane 0</p>
+        <!--<p>Content of Tab Pane 0</p>-->
       </a-tab-pane>
       <a-tab-pane key="1">
         <template #tab>
           <my-icon class-name="icon-Home"></my-icon>
           <span>Home</span>
         </template>
-        <p>Content of Tab Pane 1</p>
+        <!--<p>Content of Tab Pane 1</p>-->
       </a-tab-pane>
       <a-tab-pane key="2">
         <template #tab>
           <my-icon class-name="icon-share"></my-icon>
           <span>Share</span>
         </template>
-        <p>Content of Tab Pane 2</p>
+        <!--<p>Content of Tab Pane 2</p>-->
 
       </a-tab-pane>
       <a-tab-pane key="3">
@@ -28,20 +28,23 @@
           <my-icon class-name="icon-views"></my-icon>
           <span>View</span>
         </template>
-        <p>Content of Tab Pane 3</p>
+        <!--<p>Content of Tab Pane 3</p>-->
 
       </a-tab-pane>
       <!--<template #leftExtra>-->
       <!--  <a-button class="tabs-extra-demo-button">File</a-button>-->
       <!--</template>-->
       <template #rightExtra>
-        <a-button>Right Extra Action</a-button>
+        <a-button type="primary">
+          Settings
+        </a-button>
       </template>
     </a-tabs>
   </div>
 </template>
 <script>
 import {defineComponent, ref} from 'vue';
+import MyIcon from "../../MyIcon.vue";
 
 export default defineComponent({
   setup() {
@@ -49,6 +52,9 @@ export default defineComponent({
       activeKey: ref('2'),
     };
   },
+  components: {
+    MyIcon
+  }
 
 });
 </script>

@@ -8,12 +8,12 @@ const { cwd } = require("process");
 var printTreeInConsole = false;
 // 忽略掉的选项
 var ignoreItem = [
-	"node_modules",
-	"filePath.js",
-	".git",
+	// "node_modules",
+	// "filePath.js",
+	// ".git",
 	// ".gitignore",
-	".vscode",
-	".idea",
+	// ".vscode",
+	// ".idea",
   // 目前发现，以下两者在超级管理员的权限之下也无法查看，暂时不做忽略
   "System Volume Information",
   "Config.Msi"

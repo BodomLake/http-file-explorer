@@ -9,9 +9,9 @@
                 <a-row>
                   <a-col :span="6"> {{ item }}</a-col>
                   <a-col :span="18">
-                    <tempalte v-if="typeof system[item] != 'object'">
+                    <template v-if="typeof system[item] != 'object'">
                       {{ system[item] }}
-                    </tempalte>
+                    </template>
                     <template v-else>
                       <a-button type="primary" @click="lookUp(item)">点击查看</a-button>
                     </template>
@@ -27,11 +27,10 @@
     <a-collapse-panel key="1" header="This PC">
       <a-list item-layout="horizontal" :data-source="drivers">
         <template #renderItem="{ item, index }">
-          <a-list-item class="driveItem" :style="{animationDelay: index * 100 +'ms'}">
+          <a-list-item class="driveItem" :style="{animationDelay: index * 100 +'ms'}" @dblclick="enterToDrive(item)">
             <a-list-item-meta>
 
               <template #avatar>
-                <!--<a-avatar src="https://joeschmoe.io/api/v1/random"/>-->
                 <svg class="icon svg-icon" aria-hidden="true" style="width: 3rem;height: 3rem;margin: 0rem 1rem">
                   <use :xlink:href="'#' + 'icon-disk'"></use>
                 </svg>
@@ -71,9 +70,6 @@
     <a-collapse-panel key="2" header="NetWork Status">
       <template v-if="wifiLoading">
         <a-spin tip="Wifi情况正在获取中..." >
-          <!--<a-alert message="Alert message title"-->
-          <!--         description="Further details about the context of this alert.">-->
-          <!--</a-alert>-->
         </a-spin>
       </template>
       <template v-else>
@@ -95,7 +91,6 @@
         </a-list>
       </template>
 
-
     </a-collapse-panel>
   </a-collapse>
 
@@ -107,13 +102,13 @@
 </template>
 
 <script>
-import {getReq} from "../utils/request";
+import {getReq} from "../../../utils/request.js";
 import Drive from "./Drive.js";
-import CPUs from '../components/Dialog/CPUs.vue'
-import NetworkInterfaces from "../components/Dialog/NetworkInterfaces.vue";
+import CPUs from '../Dialog/CPUs-setup.vue'
+import NetworkInterfaces from "../Dialog/NetworkInterfaces.vue";
 
 export default {
-  name: "MainWindow",
+  name: "ThisPC",
   components: {
     NetworkInterfaces,
     CPUs
@@ -157,7 +152,7 @@ export default {
     getDrivesByDeviceId(deviceId, attr) {
       getReq('/system/getDrivesByAttr', {deviceId, attr}).then((res) => {
         let data = res.data
-        console.log(data)
+        // console.log('/system/getDrivesByAttr', data)
         for (let i = 0; i < this.drivers.length; i++) {
           let drive = this.drivers[i]
           if (drive.target == data.id) {
@@ -179,7 +174,8 @@ export default {
     wifiNetworks() {
       this.wifiLoading = true
       getReq('/system/wifiNetworks').then((res) => {
-        console.log(res.data)
+        console.log('/system/wifiNetworks')
+        console.table(res.data)
         this.wifis = res.data;
         this.wifiLoading = false
       }).finally(() => {
@@ -193,11 +189,18 @@ export default {
       this.showModal = false
     },
     lookUp(item) {
+      console.log(item);
       this.showModal = true;
       this.title = item;
       this.detail = this.system[item];
+    },
+    enterToDrive(item){
+      // console.log(item, item.target)
+      this.$emit('enterToDrive', item.target)
     }
-  }
+  },
+  // custom组件 指定自定义事件名称 规避警告
+  emits: ['enterToDrive']
 }
 </script>
 

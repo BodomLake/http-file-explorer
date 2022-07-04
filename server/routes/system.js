@@ -25,7 +25,7 @@ router.get("/getList", async (req, res, next) => {
 
 router.get("/getDir", function (req, res, next) {
   let dir = req.query.absPath ? req.query.absPath : path.resolve(__dirname, "../../");
-  console.log("指定目录", dir.green);
+  // console.log("指定目录", dir.green);
   let targetDir = readContentSync(dir, 1);
   // console.log(targetDir, __dirname)
   res.json(targetDir || {});

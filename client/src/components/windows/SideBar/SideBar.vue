@@ -8,7 +8,7 @@
       <my-icon v-else :className="'icon-' + dataRef.type"></my-icon>
     </template>
     <template #title="{ dataRef }">
-      <span style="color: crimson;">{{ dataRef.name }}</span>
+      <span class="text">{{ dataRef.name }}</span>
     </template>
     <!--<template-->
     <!--    #switcherIcon="{active, checked, expanded, loading, selected, halfChecked, title, key, children, dataRef, data, defaultIcon, switcherCls}">-->
@@ -73,8 +73,10 @@ function convertToTreeData(data) {
 
   return fileArray.reverse();
 }
+
 import {defineComponent, ref} from 'vue';
-import {getReq} from "../utils/request";
+import {getReq} from "../../../utils/request";
+import MyIcon from "../../MyIcon.vue";
 
 export default defineComponent({
 
@@ -127,6 +129,9 @@ export default defineComponent({
       },
     };
   },
+  components: {
+    MyIcon
+  },
   mounted() {
 
   },
@@ -140,11 +145,19 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.text {
+  color: white;
+}
+</style>
+<style>
+
 .sidebar {
   max-height: 100%;
   overflow: auto;
+  background-color: transparent !important;
 }
-/*:deep span.ant-tree-switcher_close {
-  display: none;
-}*/
+
+span.ant-tree-switcher {
+  background-color: transparent !important;
+}
 </style>
