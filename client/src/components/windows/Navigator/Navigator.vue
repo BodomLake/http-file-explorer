@@ -93,7 +93,7 @@
             </a-input>
           </div>
           <div style="position: absolute;height: 100%;width: 100%;left:0px;z-index: 1;">
-            <a-select id="select" ref="select" :tabindex=2 :open="dropDownFlag" style="width: 100%;"
+            <a-select id="select" ref="select" :tabindex=2 :open="isDropDown" style="width: 100%;"
                       @dropdownVisibleChange="dropdownVisibleChange" @select="selectOneOption">
               <template v-for="(h, hi) in inputHistory">
                 <a-select-option :value="h.value" :data-index="hi">{{ h.label }}
@@ -167,9 +167,10 @@ export default {
           label: 'D:\\Qt\\Tools\\',
         },
       ],
-      dropDownFlag: false,
+      // 是否下拉的判据
+      isDropDown: false,
       // 按钮被点击
-      dropDownClicked: false,
+      dropDownBtnClk: false,
       currentPath: '',
       // 正在输入的路径
       inputPath: '',
@@ -230,9 +231,9 @@ export default {
     selectOneOption(value, option) {
       console.log(value, option)
       // 关掉下拉框
-      this.dropDownFlag = false;
+      this.isDropDown = false;
       // 否认点击下拉按钮
-      this.dropDownClicked = false;
+      this.dropDownBtnClk = false;
       // 访问文件夹/文件
       this.visitDir(value)
     },
@@ -242,14 +243,14 @@ export default {
     handleBlur($event) {
       // $event.preventDefault()
       // $event.stopPropagation()
-      console.log('处理失焦的元素：', $event.target.tagName, this.dropDownClicked)
+      console.log('处理失焦的元素：', $event.target.tagName, this.dropDownBtnClk)
       // 要实现blur函数不干扰下拉功能
       setTimeout(()=>{
-        if (!this.dropDownClicked) {
+        if (!this.dropDownBtnClk) {
           this.editMode = false;
         }
-        if (!this.dropDownClicked) {
-          this.dropDownFlag = false;
+        if (!this.dropDownBtnClk) {
+          this.isDropDown = false;
         }
       }, 100)
     },
@@ -258,7 +259,7 @@ export default {
     },
     handleClick($event) {
       $event.stopPropagation()
-      this.dropDownClicked = false;
+      this.dropDownBtnClk = false;
     },
     // 切换到输入模式
     changeInputMode() {
@@ -277,8 +278,8 @@ export default {
 
     },
     dropDown() {
-      this.dropDownFlag = true;
-      this.dropDownClicked = true;
+      this.isDropDown = true;
+      this.dropDownBtnClk = true;
     },
   },
 }

@@ -137,7 +137,7 @@ export default {
   methods: {
     getDrives() {
       getReq('/system/getDrives').then((res) => {
-        console.table(res.data)
+        // console.table(res.data)
         let drivers = res.data;
         this.drivers = new Array(drivers.length).fill(new Drive())
         setTimeout(() => {
@@ -166,7 +166,7 @@ export default {
     },
     getBasicSysInfo() {
       getReq('/system/getList').then((res) => {
-        console.log(res.data)
+        // console.log(res.data)
         this.system = res.data;
         this.systemKeys = Object.keys(res.data)
       })
@@ -174,8 +174,8 @@ export default {
     wifiNetworks() {
       this.wifiLoading = true
       getReq('/system/wifiNetworks').then((res) => {
-        console.log('/system/wifiNetworks')
-        console.table(res.data)
+        // console.log('/system/wifiNetworks')
+        // console.table(res.data)
         this.wifis = res.data;
         this.wifiLoading = false
       }).finally(() => {
@@ -189,7 +189,7 @@ export default {
       this.showModal = false
     },
     lookUp(item) {
-      console.log(item);
+      // console.log(item);
       this.showModal = true;
       this.title = item;
       this.detail = this.system[item];

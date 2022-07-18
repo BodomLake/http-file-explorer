@@ -7,9 +7,11 @@ import Navigator from "./components/windows/Navigator/Navigator.vue";
 export default {
   name: 'app',
   components: {
-    Navigator,
-    'SideBar':SideBar, 'Header': Header, 'MainWindow':MainWindow
-  }
+    'Navigator': Navigator,
+    'SideBar':SideBar,
+    'Header': Header,
+    'MainWindow':MainWindow
+  },
 }
 </script>
 
