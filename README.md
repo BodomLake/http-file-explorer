@@ -1,0 +1,1 @@
+# 一个基于Http传输协议的Web应用，server端读取系统信息，client端目前只模仿制作了windows系统自带的文件浏览器；以后也会加入MacOS 的Finder以及 Linux流行的XFace或者Gnome文件浏览器；
