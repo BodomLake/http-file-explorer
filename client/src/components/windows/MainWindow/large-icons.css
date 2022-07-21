@@ -1,0 +1,12 @@
+.extra-large-icons-layout {
+
+}
+
+.extra-large-icons-item {
+  color: whitesmoke;
+  height: calc(81vh/3);
+  width: calc(80vw/6);
+}
+@media screen and (max-width: 1920px) and (min-width: 1560px) {
+
+}

@@ -19,10 +19,9 @@ import {
   Modal,
   Card,
   Menu,
-  MenuItem,
   Dropdown,
   Tooltip,
-  Breadcrumb
+  Breadcrumb,
 } from 'ant-design-vue';
 
 // app的实例化
@@ -41,10 +40,10 @@ app.use(Tabs);
 app.use(Modal);
 app.use(Card);
 app.use(Menu);
-app.use(MenuItem);
 app.use(Dropdown);
 app.use(Tooltip);
 app.use(Breadcrumb);
+
 // 安装 Pinia
 app.use(createPinia())
 

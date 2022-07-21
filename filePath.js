@@ -18,6 +18,9 @@ var ignoreItem = [
   "System Volume Information",
   "Config.Msi"
 ];
+var ignoreSuffix = [
+	'sys', 'tmp'
+]
 class File {
 	constructor(name, absPath, relPath, type, size, comment, tag) {
 		this.name = name || "";
@@ -111,14 +114,18 @@ function readContentSync(
 		if (depth > depthLimit) {
 			break;
 		}
-		// 是否是被忽略的item?
+		// windows 系统敏感文件，不去读取
+		if (itemName.endsWith('.sys') || itemName.endsWith('.tmp')){
+			continue;
+		}
+		// 是否是被忽略的item?只处理不被忽略的选项
 		if (!ignoreItem.includes(itemName)) {
 			let stat;
-      try{
+      try {
         stat = fs.statSync(absPath);
       } catch (e) {
         console.log('无法获取，给出错误', e);
-        // 报错的话，就不要尽心下去了
+        // 报错的话，就不要进行下去了
         continue;
       }
 			// 是文件夹

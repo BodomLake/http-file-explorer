@@ -1,101 +1,33 @@
 <script>
 import './assets/iconfont.js';
-import Header from "./components/windows/Header/Header.vue";
-import SideBar from "./components/windows/SideBar/SideBar.vue";
-import MainWindow from "./components/windows/MainWindow/MainWindow.vue";
-import Navigator from "./components/windows/Navigator/Navigator.vue";
+import WindowsExplorer from "./components/windows/WindowsExplorer.vue";
+import Xfce from "./components/linux/Xfce.vue";
+import Finder from "./components/macOS/Finder.vue";
+
 export default {
   name: 'app',
+  // 三种操作系统的文件浏览器，不同的客户端体验，根据实际操作系统的类型进行切换
   components: {
-    'Navigator': Navigator,
-    'SideBar':SideBar,
-    'Header': Header,
-    'MainWindow':MainWindow
+    Finder,
+    Xfce,
+    WindowsExplorer,
+  },
+  data() {
+    return {
+      system: 'Windows',
+    }
   },
 }
 </script>
 
 <template>
-  <div class="layout">
-    <div class="layout-header">
-      <Header></Header>
-    </div>
-    <div class="layout-nav">
-      <Navigator></Navigator>
-    </div>
-
-    <div class="layout-middle">
-      <div class="layout-sidebar background">
-        <SideBar></SideBar>
-      </div>
-      <div class="layout-content">
-        <MainWindow></MainWindow>
-      </div>
-    </div>
-    <div class="layout-footer"></div>
-  </div>
-
+  <template v-if="system == 'Windows'">
+    <WindowsExplorer></WindowsExplorer>
+  </template>
+  <template v-if="system == 'Linux'">
+    <Xfce></Xfce>
+  </template>
+  <template v-if="system == 'MacOS'">
+    <Finder></Finder>
+  </template>
 </template>
-
-<style>
-.layout {
-  width: 100vw;
-  height: 100vh;
-}
-
-.layout-middle {
-  width: 100vw;
-  height: 81vh;
-  display: flex;
-  flex-direction: row;
-}
-
-.layout-header {
-  width: 100vw;
-  height: 13vh;
-}
-.layout-nav {
-  width: 100vw;
-  height: 4vh;
-}
-
-.layout-sidebar {
-  width: 20vw;
-  height: 81vh;
-  border: 1px solid black;
-  overflow: auto;
-  background-color: transparent !important;
-}
-
-.layout-content {
-  width: 80vw;
-  height: 81vh;
-  border: 1px solid black;
-  overflow: auto;
-  background-image: url("./assets/iMac.jpg");
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-.background {
-/*  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;*/
-  height: 100%;
-/*  width: 100%;*/
-  background-image: url("./assets/Beach.jpg");
-  background-position: left top;
-  background-size: cover;
-  background-repeat: no-repeat;
-  font-weight: 400;
-  /*filter: contrast(1);*/
-  /*filter: drop-shadow(16px 16px 20px blue);*/
-}
-
-.layout-footer {
-  width: 100vw;
-  height: 2vh;
-}
-</style>

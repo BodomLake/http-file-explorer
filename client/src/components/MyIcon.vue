@@ -29,8 +29,10 @@ export default {
 .my-icon {
   display: inline;
   margin: 0.1rem;
-  width: 0.25rem;
-  height: 0.25rem;
+  /*width: 0.25rem;*/
+  /*height: 0.25rem;*/
+  width: 100%;
+  height: 100%;
 }
 
 .icon {

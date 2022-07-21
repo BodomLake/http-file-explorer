@@ -1,30 +1,6 @@
 <template>
   <a-collapse v-model:activeKey="activeKey" style="opacity: 0.9">
-    <a-collapse-panel key="0" header="System Information">
-      <a-list item-layout="horizontal" :data-source="systemKeys" size="small">
-        <template #renderItem="{ item }">
-          <a-list-item>
-            <a-list-item-meta>
-              <template #title>
-                <a-row>
-                  <a-col :span="6"> {{ item }}</a-col>
-                  <a-col :span="18">
-                    <template v-if="typeof system[item] != 'object'">
-                      {{ system[item] }}
-                    </template>
-                    <template v-else>
-                      <a-button type="primary" @click="lookUp(item)">点击查看</a-button>
-                    </template>
-                  </a-col>
-                </a-row>
-              </template>
-            </a-list-item-meta>
-          </a-list-item>
-        </template>
-      </a-list>
-    </a-collapse-panel>
-
-    <a-collapse-panel key="1" header="This PC">
+    <a-collapse-panel key="0" header="This PC">
       <a-list item-layout="horizontal" :data-source="drivers">
         <template #renderItem="{ item, index }">
           <a-list-item class="driveItem" :style="{animationDelay: index * 100 +'ms'}" @dblclick="enterToDrive(item)">
@@ -66,7 +42,29 @@
         </template>
       </a-list>
     </a-collapse-panel>
-
+    <a-collapse-panel key="1" header="System Information">
+      <a-list item-layout="horizontal" :data-source="systemKeys" size="small">
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <a-list-item-meta>
+              <template #title>
+                <a-row>
+                  <a-col :span="6"> {{ item }}</a-col>
+                  <a-col :span="18">
+                    <template v-if="typeof system[item] != 'object'">
+                      {{ system[item] }}
+                    </template>
+                    <template v-else>
+                      <a-button type="primary" @click="lookUp(item)">点击查看</a-button>
+                    </template>
+                  </a-col>
+                </a-row>
+              </template>
+            </a-list-item-meta>
+          </a-list-item>
+        </template>
+      </a-list>
+    </a-collapse-panel>
     <a-collapse-panel key="2" header="NetWork Status">
       <template v-if="wifiLoading">
         <a-spin tip="Wifi情况正在获取中..." >
@@ -113,6 +111,12 @@ export default {
     NetworkInterfaces,
     CPUs
   },
+  props: {
+    currentPath: {
+      type: String,
+      default: '',
+    }
+  },
   data() {
     return {
       system: {
@@ -121,18 +125,20 @@ export default {
       fsTypeOption: ['Unknown', 'No Root Directory', 'Removable Dick', 'Local Disk', 'Network Drive', 'Compat Disc', 'RAM Disk'],
       systemKeys: ['k'],
       drivers: [],
-      activeKey: ['1', '2'],
+      activeKey: ['0', '2'],
       showModal: false,
       detail: {},
       title: 'OS信息',
       wifis: [],
       wifiLoading: false,
+
     }
   },
   mounted() {
     this.getDrives();
     this.getBasicSysInfo();
     this.wifiNetworks();
+
   },
   methods: {
     getDrives() {
@@ -194,13 +200,15 @@ export default {
       this.title = item;
       this.detail = this.system[item];
     },
-    enterToDrive(item){
-      // console.log(item, item.target)
-      this.$emit('enterToDrive', item.target)
+    // 进入硬盘
+    enterToDrive(item, suffix){
+      suffix = suffix || '//'
+      console.log(item, item.target)
+      // this.currentPath = item.target + suffix
+      this.$emit('update:currentPath', item.target + suffix)
     }
   },
-  // custom组件 指定自定义事件名称 规避警告
-  emits: ['enterToDrive']
+  // emits: ['update:currentPath'],
 }
 </script>
 

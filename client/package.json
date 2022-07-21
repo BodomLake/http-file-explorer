@@ -11,6 +11,7 @@
     "@ant-design/icons-vue": "^6.1.0",
     "ant-design-vue": "^3.2.10",
     "axios": "^0.27.2",
+    "mitt": "^3.0.0",
     "pinia": "^2.0.14",
     "plist": "^3.0.5",
     "vue": "^3.2.25",

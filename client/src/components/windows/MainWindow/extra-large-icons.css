@@ -1,0 +1,41 @@
+.extra-large-icons-layout {
+
+}
+
+.extra-large-icons-box {
+  color: black;
+  height: calc(81vh / 3);
+  width: calc(80vw / 6);
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+}
+
+.extra-large-icons-icon {
+  height: 85%;
+  margin: 0px auto;
+  width: 80%;
+  /*background-color: navajowhite;*/
+  position: relative;
+}
+
+.extra-large-icon {
+  height: 80%;
+  width: 100%;
+}
+
+.extra-large-icons-text {
+  vertical-align: middle;
+  height: 10%;
+  width: 90%;
+  white-space: nowrap;
+  font-size: 1.2rem;
+  user-select: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 1920px) and (min-width: 1560px) {
+
+}
