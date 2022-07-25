@@ -1,17 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs')
+var si = require('systeminformation');
 
-
-/**
- * 用于测试基础 GET 请求的接口
- * @route GET /user/
- * @summary GET 测试
- * @group 测试
- * @returns {object} 200 - 返回 world
- */
-router.get('/', function(req, res, next) {
-  res.json({ response: 'respond with a resource'});
-});
 /**
  * This function comment is parsed by doctrine
  * @route GET /api
@@ -21,7 +12,35 @@ router.get('/', function(req, res, next) {
  * @returns {object} 200 - An array of user info
  * @returns {Error}  default - Unexpected error
  */
-router.get('/', function(req, res, next) {
-  res.json({ response: 'respond with a resource'});
+router.get('/', function (req, res, next) {
+  res.json({response: 'respond with a resource'});
+});
+/**
+ * 留给ThisPC.vue 组件来请求
+ * 检查当前用户的私人文件夹
+ * 3D Obejcts, Desktop , Documents, Downloads, Music, Pictures, Videos
+ */
+router.get('/getPersonalFolder', function (req, res, next) {
+  const defaultFolderNames = ['3D Objects', 'Desktop', 'Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
+  let users;
+  let arr = []
+  si.users().then(data => {
+    // console.log(data);
+    users = data;
+    let stat;
+    const userPrefix = 'C:\\users\\' + users[0].user + '\\';
+    for (let i = 0; i < defaultFolderNames.length; i++) {
+      try {
+        stat = fs.statSync(userPrefix + defaultFolderNames[i])
+        stat.name = defaultFolderNames[i]
+        arr.push(stat)
+      } catch (exp) {
+        console.log(exp);
+      }
+    }
+  }).finally(()=>{
+    res.json(arr || []);
+  });
+
 });
 module.exports = router;

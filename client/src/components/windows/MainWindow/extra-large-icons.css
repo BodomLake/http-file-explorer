@@ -1,5 +1,10 @@
-.extra-large-icons-layout {
-
+.extra-large-icons-inner {
+  height: 80%;
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .extra-large-icons-box {
@@ -10,6 +15,7 @@
   justify-content: space-around;
   flex-direction: column;
   align-items: center;
+  font-size: 1.2rem;
 }
 
 .extra-large-icons-icon {
@@ -27,15 +33,70 @@
 
 .extra-large-icons-text {
   vertical-align: middle;
-  height: 10%;
+  height: 15%;
   width: 90%;
   white-space: nowrap;
-  font-size: 1.2rem;
   user-select: none;
   text-overflow: ellipsis;
   overflow: hidden;
+  line-height: 200%;
+}
+/* 宽度控制 */
+@media screen and (max-width: 1920px) and (min-width: 1560px) {
+  .extra-large-icons-box {
+    color: black;
+    height: calc(81vh / 3);
+    width: calc(80vw / 6);
+    width: 300px;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2rem;
+  }
+}
+/* 宽度控制 */
+@media screen and (max-width: 1560px) and (min-width: 1200px) {
+  .extra-large-icons-box {
+    color: black;
+    height: calc(81vh / 4);
+    width: calc(80vw / 5);
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1rem;
+  }
 }
 
-@media screen and (max-width: 1920px) and (min-width: 1560px) {
+/* 宽度控制 */
+@media screen and (max-width: 1200px) and (min-width: 800px) {
+  .extra-large-icons-box {
+    color: black;
+    /* 一列最多3个并列 */
+    height: calc(81vh / 5);
+    /* 一行最多6个并行 */
+    width: calc(80vw / 8);
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+}
 
+/* 宽度控制 小于等于800px的宽度 */
+@media screen and (max-width: 800px) {
+  .extra-large-icons-box {
+    color: black;
+    /* 一列最多3个并列 */
+    height: calc(81vh / 6);
+    /* 一行最多6个并行 */
+    width: calc(80vw / 8);
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.8rem;
+  }
 }

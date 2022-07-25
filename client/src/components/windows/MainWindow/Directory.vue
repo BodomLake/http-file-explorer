@@ -8,8 +8,7 @@
       <div v-for="(item, i) in itemList" class="extra-large-icons-box">
         <!-- 内层图标 -->
         <div class="extra-large-icons-icon">
-          <div style="height: 80%; width: 100%; position:absolute; left:50%; top:50%;transform: translate(-50%, -50%)">
-
+          <div class="extra-large-icons-inner">
             <template v-if="!item.isFile">
               <svg class="extra-large-icon" aria-hidden="true">
                 <use :xlink:href="'#' + 'icon-folder'"></use>
@@ -115,6 +114,8 @@ export default {
   flex-wrap: wrap;
   overflow-y: auto;
   overflow-x: hidden;
+  align-content: flex-start;
+  /*justify-content: space-around;*/
 }
 
 .base-layout::-webkit-scrollbar {

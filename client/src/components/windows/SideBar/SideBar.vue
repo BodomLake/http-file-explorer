@@ -10,14 +10,8 @@
     <template #title="{ dataRef }">
       <span class="text">{{ dataRef.name }}</span>
     </template>
-    <!--<template-->
-    <!--    #switcherIcon="{active, checked, expanded, loading, selected, halfChecked, title, key, children, dataRef, data, defaultIcon, switcherCls}">-->
-    <!--  <component :is="dataRef.isFile ? null : defaultIcon" :class="switcherCls"/>-->
-    <!--</template>-->
     <template #switcherIcon="{ dataRef, switcherCls, defaultIcon }">
       <component :is="!dataRef.isLeaf ? defaultIcon : undefined" v-if="!dataRef.isFile"></component>
-      <!--<span v-else></span>-->
-      <!--<down-outlined v-else :class="switcherCls" />-->
     </template>
   </a-tree>
 </template>
@@ -62,6 +56,8 @@ export default defineComponent({
             resolve()
           })
         }
+      }).catch(e=>{
+        console.log('/system/getDir',e);
       })
     }
 

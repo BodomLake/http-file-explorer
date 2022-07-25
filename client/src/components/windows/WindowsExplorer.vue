@@ -1,3 +1,22 @@
+<template>
+  <div class="layout">
+    <div class="layout-header">
+      <Header></Header>
+    </div>
+    <div class="layout-nav">
+      <Navigator></Navigator>
+    </div>
+    <div class="layout-middle">
+      <div class="layout-sidebar background">
+        <SideBar :currentPath="userDirPath"></SideBar>
+      </div>
+      <div class="layout-content">
+        <MainWindow></MainWindow>
+      </div>
+    </div>
+    <div class="layout-footer"></div>
+  </div>
+</template>
 <script>
 import Header from "../windows/Header/Header.vue";
 import SideBar from "../windows/SideBar/SideBar.vue";
@@ -10,7 +29,9 @@ export default {
   data() {
     return {
       currentPath: defaultPath,
-      sideBarPath: 'C:\\'
+      // userDirPath: 'C:\\'
+      // 需要后端处理，不仅仅是Desktop 还有 ThisPC 已经当前用户的收藏夹(User? Libraries Network RecycleBin )
+      userDirPath: 'C:\\Users\\MACHENIKE\\'
     }
   },
   components: {
@@ -21,29 +42,6 @@ export default {
   },
 }
 </script>
-
-<template>
-  <div class="layout">
-    <div class="layout-header">
-      <Header></Header>
-    </div>
-    <div class="layout-nav">
-      <Navigator></Navigator>
-    </div>
-
-    <div class="layout-middle">
-      <div class="layout-sidebar background">
-        <SideBar :currentPath="sideBarPath"></SideBar>
-      </div>
-      <div class="layout-content">
-        <MainWindow></MainWindow>
-      </div>
-    </div>
-    <div class="layout-footer"></div>
-  </div>
-
-</template>
-
 <style>
 .layout {
   width: 100vw;

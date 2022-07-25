@@ -102,6 +102,7 @@ function readContentSync(
 		// console.log("所在文件夹:", directory.name);
 	}
 	// 读取该文件夹
+	console.log(dirPath)
 	var dir = fs.readdirSync(dirPath);
 	// 文件夹深度加大 默认首次会变成1; 也可以认为是 递归深度
 	depth++;

@@ -5,10 +5,10 @@ var fs = require("fs");
 const {system} = require("../utils/system");
 const path = require("path");
 const colors = require('colors')
-const {readContentSync} = require("../../filePath");
-const {diskinfo} = require("@dropb/diskinfo");
+const {readContentSync} = require("../utils/filePath");
 const {getAllDiskOneAttr} = require("../utils/getAllDisk");
 const {Response, Request} = require("../public/body.js")
+const {getDrives, getPersonalFolders} = require("../service/user.js");
 
 
 router.get('/', function (req, res, next) {
@@ -40,23 +40,26 @@ router.get("/getDir", function (req, res, next) {
  * 获取各个驱动盘
  */
 router.get("/getDrives", async (req, res, next) => {
-  await diskinfo().then(result => {
-    // console.log(result)
-    res.send(result)
-  }).catch(err =>
-    console.error(err.message)
-  );
+  let drives = await getDrives()
+  res.send(drives)
+})
+
+/**
+ * 获取根目录 / ThisPC 下面的Library和Drives
+ *
+ */
+router.get("/getRootDir", async (req, res, next) => {
+  let drives = await getDrives()
+  let folders = await getPersonalFolders()
+  res.json({
+    drives, folders
+  })
 })
 
 /**
  * 自己实现的 windows-cmd命令行标准输出，获取硬盘信息
  * 获取各个驱动盘
  */
-/*
-  router.get("/getDrives", async (req, res, next) => {
-    res.send(await getAllDisk())
-  })
-*/
 router.get("/getDrivesByAttr", async (req, res, next) => {
   let attr = req.query.attr || '';
   let deviceId = req.query.deviceId || '';

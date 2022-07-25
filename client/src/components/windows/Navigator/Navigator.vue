@@ -9,7 +9,7 @@
           <template #title>
             <span>Back To "{{ prevDir }}" (Alt + Left Arrow)</span>
           </template>
-          <a-button class="button-limit" type="text">
+          <a-button class="button-limit" type="text" @click="gotoPrevDir">
             <arrow-left-outlined/>
           </a-button>
         </a-tooltip>
@@ -21,7 +21,7 @@
           <template #title>
             <span>Forward To "{{ nextDir }}" (Alt + Right Arrow)</span>
           </template>
-          <a-button class="button-limit" type="text">
+          <a-button class="button-limit" type="text" @click="gotoNextDir">
             <arrow-right-outlined/>
           </a-button>
         </a-tooltip>
@@ -40,7 +40,7 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item v-for="(path, pi) in historyPaths" :key="pi">
-                  <a :href=" '/#/' + path"> {{ '/#/' + path }}</a>
+                  <a :href=" '/#/' + path.value.replaceAll('\\', '/')"> {{ path.label }}</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -54,7 +54,7 @@
           <template #title>
             <span>Up To " {{ upperDir }} " (Alt + Up Arrow)</span>
           </template>
-          <a-button class="button-limit" type="text">
+          <a-button class="button-limit" type="text" @click="gotoUpperDir">
             <arrow-up-outlined/>
           </a-button>
         </a-tooltip>
@@ -62,32 +62,50 @@
 
     </div>
 
-    <!-- tabindex可以让div使能blur事件 -->
+    <!-- 路径交互框；tabindex可以让div使能blur事件 -->
     <div name="path" class="row-layout" style="padding: 1px;" :tabindex=0>
-
+      <!-- 路由导航模式 -->
       <template v-if="!editMode">
         <div class="address-border address-inner" @click="changeInputMode($event)">
-          <a-breadcrumb>
-            <template v-for="(dir,di) in dirArr">
-              <a-breadcrumb-item :href="dir" @click="gotoDir(dirArr,dir,di)">
-                {{ dir }}
-              </a-breadcrumb-item>
+          <div class="address-border address-inner">
+
+            <!-- 根路径下面的所有元素 ThisPC -->
+            <a-dropdown :trigger="['click']" @click="refreshRootDir">
+              <a-button class="button-limit" type="text">
+                <right-outlined :style="{fontSize: '12px', color: '#000000'}"/>
+              </a-button>
+              <template #overlay>
+                <a v-for="item in rootDir" :href=" '/#/' + item.value.replaceAll('\\', '/')">
+                  {{ item.label }}
+                </a>
+              </template>
+            </a-dropdown>
+
+            <template v-for="(dir, di) in dirArr">
+
+              <div class="nav-unit">
+                <!-- 展示文本 -->
+                <div class="nav-text" @click="gotoDir(dirArr, dir, di)">
+                  {{ dir == '\\' ? 'ThisPC' : dir }}
+                </div>
+                <!-- 下拉文件菜单 -->
+                <a-dropdown :trigger="['click']" class="nav-dropdown">
+                  <a-button class="button-limit" style="padding-left: 8px; padding-right: 8px;" type="text">
+                    <right-outlined :style="{fontSize: '12px', color: '#000000'}"/>
+                  </a-button>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item v-for="item in dropDownDirMenu[di]" :data-index="di" :key="di">
+                        <a :href=" '/#/' + item.absPath.replaceAll('\\', '/')">
+                          {{ item.name }}
+                        </a>
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </div>
             </template>
-            <template #separator>
-              <a-dropdown :trigger="['click']">
-                <a-button class="button-limit" type="text">
-                  <right-outlined :style="{fontSize: '12px', color: '#000000'}"/>
-                </a-button>
-                <template #overlay>
-                  <a-menu>
-                    <a-menu-item v-for="(path, pi) in historyPaths" :key="pi">
-                      <a :href=" '/#/' + path"> {{ '/#/' + path }}</a>
-                    </a-menu-item>
-                  </a-menu>
-                </template>
-              </a-dropdown>
-            </template>
-          </a-breadcrumb>
+          </div>
         </div>
       </template>
       <!-- 进入编辑模式 -->
@@ -95,8 +113,8 @@
         <div class="address-border" style="position: relative;" :tabindex=1>
           <div span=24 style="position: absolute;height: 100%;width: 100%;left:0px;z-index: 2">
             <!-- 点击空白处，展示输入框 -->
-            <a-input v-model:value="inputPath" id="input" ref="input" @keydown.enter="visitTarget(inputPath)"
-                     style="height: 100%"
+            <a-input v-model:value="inputPath"
+                     id="input" ref="input" @keydown.enter="visitTarget(inputPath)" style="height: 100%"
                      @focus="handleFocus" @click="handleClick($event)" @change="handleChange"
                      @blur="handleBlur($event)">
               <template #suffix>
@@ -199,10 +217,24 @@ export default {
       // 上级目录
       upperDir: '',
       // 当前目录的各层级
-      // dirArr: ['D', 'VS', 'CS', 'ProjectTemplate1'],
       dirArr: ['\\'],
+      // 路由导航点击下拉，设计在dirArr没有变化的情况下，为每次点击请求更新
+      dropDownDirMenu: [],
+      // 面包屑导航箭头指向左侧文件夹下面所有的文件夹
+      allDirectory: [
+        {value: 'D:\\VS', label: 'D:\\VS'},
+      ],
       // 历史路径(history),显示的时候显示元素的最后一层
-      historyPaths: ['D:\\VS', 'D:\\TencentQQ', 'D:\\php'],
+      // 但凡是输入框点击或者输入的都记录到该数组中
+      historyPaths: [
+        {value: 'D:\\VS', label: 'D:\\VS'},
+        {value: '\\', label: 'This PC'},
+        {value: 'D:\\TencentQQ', label: 'D:\\TencentQQ'},
+        {value: 'D:\\php', label: 'D:\\php'}
+      ],
+      rootDir: [
+        {value: '\\', label: 'This PC'},
+      ],
       editMode: false,
       // 输入框输入过的历史
       inputHistory: [
@@ -215,16 +247,25 @@ export default {
       currentPath: '',
       // 正在输入的路径
       inputPath: '\\',
+      kvMap: [
+        {k: 'This PC', v: '\\'},
+
+      ],
     }
   },
   mounted() {
+    this.getRootDir();
     let that = this;
     window.onfocus = function () {
       window.document.title = 'HTTP-File-Explorer'
     }
     window.onblur = function () {
-      console.log(that.currentDir, that.dirArr)
-      window.document.title = that.currentDir;
+      // console.log(that.currentDir, that.dirArr)
+      if (that.currentDir == '\\') {
+        window.document.title = 'This PC';
+      } else {
+        window.document.title = that.currentDir;
+      }
     }
     emitter.on('visitCallBack', cb => {
       console.log('visitCallBack', cb)
@@ -254,9 +295,9 @@ export default {
       handler: function (val, oldVal) {
         // 结尾不加路径分割符'\\'
         this.currentPath = val.join('\\')
+        this.refreshAllDropMenu()
         console.log('dirArr changed', val, oldVal, this.currentDir)
         window.document.title = val.slice(-1)[0]
-        this.visitTarget(this.currentPath)
       },
     },
   },
@@ -265,21 +306,57 @@ export default {
     gotoDir(dirArr, dir, di) {
       // 删掉被点击的目录后面的目录层级
       this.dirArr.splice(di + 1, dirArr.length - di - 1)
-      console.log('gotoDir changed', this.dirArr)
+      console.log('gotoDir changed', this.dirArr, this.currentPath)
+      this.visitTarget(this.dirArr.join('\\'))
       window.document.title = this.dirArr.slice(-1)[0]
     },
+    getRootDir() {
+      getReq('/system/getRootDir').then(res => {
+        console.log('getRootDir', res.data)
+      })
+    },
+    // 更新所有的文件夹下面的菜单
+    refreshAllDropMenu() {
+      // 如果是空的项目，就说明没有请求过的；改动
+      this.dropDownDirMenu = new Array(this.dirArr.length).fill(undefined)
+      console.log('refreshAllDropMenu', this.dirArr)
+      if (this.dirArr.length == 1) {
 
+      } else {
+        this.dirArr.forEach((dir, di, dirArr) => {
+          let path = dirArr.slice(0, di + 1).join('\\') + '\\'
+          console.log(path)
+          // 可以说每一层路由都请求了
+          getReq("/system/getDir", {absPath: path}).then(response => {
+            // console.log(response.data.directories)
+            this.dropDownDirMenu[di] = response.data.directories.map(d => {
+              d.absPath.replaceAll('\\', '/')
+              return d;
+            })
+          })
+        })
+      }
+
+    },
+    // 更新
+    refreshRootDir() {
+
+    },
     /**
      * 首先判断这是不是文件夹，还是文件
-     * 如果是文件：要设计出相应的下载通道或者说相应的解析方式（直接在页面上展示，比如pdf.js解析PDF文件的blob流），
+     * 如果是文件：要设计出相应的下载通道或者说相应的解析方式(FileViewer.vue)（直接在页面上展示，比如pdf.js解析PDF文件的blob流），
      * 如果是无法用浏览器解析的文件或者体积过大的情况，就强制使用下载的手段/服务器解析；
      * 如果是文件夹：后端返回了正确的文件夹信息，那么给<Directory>、<ThisPC>组件数据，展示相应的文件夹内容；
      * 错误的情况：<a-message> error/warning 给出提示
      */
     visitTarget(path) {
-      console.log(path)
+      console.log('visitTarget', path)
       this.inputPath = path
-
+      if (path == '\\') {
+        this.dirArr = ['\\']
+      } else {
+        this.dirArr = path.split('\\')
+      }
       // 尝试发出请求到后端
       getReq('/system/isDirectory', {absPath: path}).then(response => {
         console.log(response.data)
@@ -318,7 +395,7 @@ export default {
     handleBlur($event) {
       // $event.preventDefault()
       // $event.stopPropagation()
-      console.log('处理失焦的元素：', $event.target.tagName, this.dropDownBtnClk)
+      // console.log('处理失焦的元素：', $event.target.tagName, this.dropDownBtnClk)
       // 要实现blur函数不干扰下拉功能
       setTimeout(() => {
         if (!this.dropDownBtnClk) {
@@ -330,7 +407,7 @@ export default {
       }, 100)
     },
     handleFocus() {
-      console.log('focus/click');
+      // console.log('focus/click');
     },
     handleClick($event) {
       $event.stopPropagation()
@@ -344,7 +421,7 @@ export default {
         this.editMode = true;
         // 盘符后面接 :/ 而不是 /，在视觉上要和Windows Explorer 保持一致
         this.inputPath = this.dirArr[0] + "\\" + this.dirArr.slice(1).join('\\')
-        if(this.dirArr.length == 1 && this.dirArr[0] == '\\') {
+        if (this.dirArr.length == 1 && this.dirArr[0] == '\\') {
           this.inputPath = '\\'
         }
         this.selectAllText()
@@ -364,6 +441,12 @@ export default {
     dropDown() {
       this.isDropDown = !this.isDropDown;
       this.dropDownBtnClk = true;
+    },
+    gotoUpperDir() {
+    },
+    gotoPrevDir() {
+    },
+    gotoNextDir() {
     },
   },
 }
@@ -399,13 +482,13 @@ export default {
 
 .address-inner {
   position: relative;
-  padding-left: 1vw;
+  /*padding-left: 1vw;*/
 }
 
 .address-inner:hover {
-  border-color: #1890ff;
+  border: 1px groove #1890ff;
   border-radius: 1px;
-  box-shadow: 0px 0px 0.5px 0.5px inset #1890ff;
+  /*box-shadow: 0px 0px 0.2px 0.1px #1890ff;*/
 }
 
 :deep(div.ant-breadcrumb) {
@@ -417,5 +500,44 @@ export default {
   min-height: 100%;
   max-height: 100%;
   height: 100%;
+}
+
+.nav-unit {
+  display: flex;
+}
+
+.nav-text {
+  padding-left: 12px;
+  padding-right: 12px;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center
+}
+
+.nav-dropdown {
+  box-sizing: border-box;
+}
+
+.nav-unit:hover {
+  border: 1px groove lightskyblue;
+  background-color: rgba(188, 229, 250, 0.5);
+  box-sizing: content-box;
+}
+
+.nav-text:hover {
+  border-right: 1px groove lightskyblue;
+  background-color: rgba(188, 229, 250, 0.5);
+  box-sizing: content-box;
+}
+
+.nav-dropdown:hover {
+  border-left: 1px groove lightskyblue;
+  background-color: rgba(188, 229, 250, 0.5);
+}
+
+ul.ant-dropdown-menu {
+  overflow-y: auto;
+  max-height: 80vh;
 }
 </style>

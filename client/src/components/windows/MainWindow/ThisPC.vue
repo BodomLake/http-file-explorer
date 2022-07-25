@@ -1,48 +1,77 @@
 <template>
   <a-collapse v-model:activeKey="activeKey" style="opacity: 0.9">
-    <a-collapse-panel key="0" header="This PC">
-      <a-list item-layout="horizontal" :data-source="drivers">
-        <template #renderItem="{ item, index }">
-          <a-list-item class="driveItem" :style="{animationDelay: index * 100 +'ms'}" @dblclick="enterToDrive(item)">
-            <a-list-item-meta>
-
-              <template #avatar>
-                <svg class="icon svg-icon" aria-hidden="true" style="width: 3rem;height: 3rem;margin: 0rem 1rem">
-                  <use :xlink:href="'#' + 'icon-disk'"></use>
+    <a-collapse-panel key="0" header="Folders">
+      <template v-if="folderLoading">
+        <a-spin tip="正在获取用户文件夹...">
+        </a-spin>
+      </template>
+      <template v-else>
+        <div class="base-layout">
+          <div v-for="(fold, fi) in userFolders" class="extra-large-icons-box">
+            <div class="extra-large-icons-icon">
+              <div class="extra-large-icons-inner">
+                <svg class="extra-large-icon" aria-hidden="true">
+                  <use :xlink:href="'#' + 'icon-folder'"></use>
                 </svg>
-              </template>
-
-              <template #title>
-                <a-row>
-                  <a-col :span="16" style="text-align: left">
-                    {{ item.volumeName == '' ? fsTypeOption[parseInt(item.fstype)] : item.volumeName }}
-                    {{ '(' + item.target + ')' }}
-                  </a-col>
-                  <a-col :span="8">
-                    {{ item.fileSystem }}
-                  </a-col>
-                </a-row>
-              </template>
-
-              <template #description>
-                <a-row style="height: 20px">
-                  <a-col :span="16" class="memBar">
-                    <a-col :span="24" class="usedMemBar" :style="{ width: item.pcent,}">
-
-                    </a-col>
-                  </a-col>
-                  <a-col :span="8">
-                    {{ convertToGBUnit(item.avail) }} GB free of {{ convertToGBUnit(item.size) }} GB
-                  </a-col>
-                </a-row>
-              </template>
-
-            </a-list-item-meta>
-          </a-list-item>
-        </template>
-      </a-list>
+              </div>
+            </div>
+            <!-- 内层文本 -->
+            <div class="extra-large-icons-text">
+              {{ fold.name }}
+            </div>
+          </div>
+        </div>
+      </template>
     </a-collapse-panel>
-    <a-collapse-panel key="1" header="System Information">
+    <a-collapse-panel key="1" header="Devices And Drives">
+      <template v-if="driverLoading">
+        <a-spin tip="正在获取所有的硬盘驱动...">
+        </a-spin>
+      </template>
+      <template v-else>
+        <a-list item-layout="horizontal" :data-source="drivers">
+          <template #renderItem="{ item, index }">
+            <a-list-item class="driveItem" :style="{animationDelay: index * 100 +'ms'}" @dblclick="enterToDrive(item)">
+              <a-list-item-meta>
+
+                <template #avatar>
+                  <svg class="icon svg-icon" aria-hidden="true" style="width: 3rem;height: 3rem;margin: 0rem 1rem">
+                    <use :xlink:href="'#' + 'icon-disk'"></use>
+                  </svg>
+                </template>
+
+                <template #title>
+                  <a-row>
+                    <a-col :span="16" style="text-align: left">
+                      {{ item.volumeName == '' ? fsTypeOption[parseInt(item.fstype)] : item.volumeName }}
+                      {{ '(' + item.target + ')' }}
+                    </a-col>
+                    <a-col :span="8">
+                      {{ item.fileSystem }}
+                    </a-col>
+                  </a-row>
+                </template>
+
+                <template #description>
+                  <a-row style="height: 20px">
+                    <a-col :span="16" class="memBar">
+                      <a-col :span="24" class="usedMemBar" :style="{ width: item.pcent,}">
+
+                      </a-col>
+                    </a-col>
+                    <a-col :span="8">
+                      {{ convertToGBUnit(item.avail) }} GB free of {{ convertToGBUnit(item.size) }} GB
+                    </a-col>
+                  </a-row>
+                </template>
+
+              </a-list-item-meta>
+            </a-list-item>
+          </template>
+        </a-list>
+      </template>
+    </a-collapse-panel>
+    <a-collapse-panel key="2" header="System Information">
       <a-list item-layout="horizontal" :data-source="systemKeys" size="small">
         <template #renderItem="{ item }">
           <a-list-item>
@@ -65,9 +94,9 @@
         </template>
       </a-list>
     </a-collapse-panel>
-    <a-collapse-panel key="2" header="NetWork Status">
+    <a-collapse-panel key="3" header="NetWork Status">
       <template v-if="wifiLoading">
-        <a-spin tip="Wifi情况正在获取中..." >
+        <a-spin tip="Wifi情况正在获取中...">
         </a-spin>
       </template>
       <template v-else>
@@ -77,10 +106,10 @@
               <a-list-item-meta>
                 <template #title>
                   <a-row>
-                    <a-col :span="6"> {{ item.ssid }}</a-col>
+                    <a-col :span="12">{{ item.ssid }}</a-col>
                     <a-col :span="6"> {{ item.bssid }}</a-col>
-                    <a-col :span="6"> {{ item.quality }}</a-col>
-                    <a-col :span="6"> {{ item.frequency }}</a-col>
+                    <a-col :span="3"> {{ item.quality }}</a-col>
+                    <a-col :span="3"> {{ item.frequency }}</a-col>
                   </a-row>
                 </template>
               </a-list-item-meta>
@@ -104,6 +133,7 @@ import {getReq} from "../../../utils/request.js";
 import Drive from "./Drive.js";
 import CPUs from '../Dialog/CPUs-setup.vue'
 import NetworkInterfaces from "../Dialog/NetworkInterfaces.vue";
+import './extra-large-icons.css'
 
 export default {
   name: "ThisPC",
@@ -124,50 +154,41 @@ export default {
       },
       fsTypeOption: ['Unknown', 'No Root Directory', 'Removable Dick', 'Local Disk', 'Network Drive', 'Compat Disc', 'RAM Disk'],
       systemKeys: ['k'],
+      userFolders: [],
       drivers: [],
-      activeKey: ['0', '2'],
+      activeKey: ['0', '1', '3'],
       showModal: false,
       detail: {},
       title: 'OS信息',
       wifis: [],
       wifiLoading: false,
-
+      folderLoading: false,
+      driverLoading: false,
     }
   },
   mounted() {
     this.getDrives();
     this.getBasicSysInfo();
     this.wifiNetworks();
-
+    this.getPersonalFolders();
   },
   methods: {
     getDrives() {
+      this.driverLoading = true
       getReq('/system/getDrives').then((res) => {
         // console.table(res.data)
         let drivers = res.data;
-        this.drivers = new Array(drivers.length).fill(new Drive())
-        setTimeout(() => {
-          this.drivers = drivers
-          this.drivers.forEach((driver) => {
-            this.getDrivesByDeviceId(driver.target, 'fileSystem');
-            this.getDrivesByDeviceId(driver.target, 'volumeName');
-          })
-        }, 100)
+        this.drivers = drivers
+      }).finally(() => {
+        this.driverLoading = false
       })
     },
-    getDrivesByDeviceId(deviceId, attr) {
-      getReq('/system/getDrivesByAttr', {deviceId, attr}).then((res) => {
-        let data = res.data
-        // console.log('/system/getDrivesByAttr', data)
-        for (let i = 0; i < this.drivers.length; i++) {
-          let drive = this.drivers[i]
-          if (drive.target == data.id) {
-            drive[data.attr] = data.value;
-            break;
-          }
-        }
-        // res.data.sp
-        let drivers = res.data;
+    getPersonalFolders() {
+      this.folderLoading = true;
+      getReq('/user/getPersonalFolder').then((res) => {
+        this.userFolders = res.data;
+      }).finally(() => {
+        this.folderLoading = false;
       })
     },
     getBasicSysInfo() {
@@ -201,7 +222,7 @@ export default {
       this.detail = this.system[item];
     },
     // 进入硬盘
-    enterToDrive(item, suffix){
+    enterToDrive(item, suffix) {
       suffix = suffix || '//'
       console.log(item, item.target)
       // this.currentPath = item.target + suffix
@@ -213,6 +234,18 @@ export default {
 </script>
 
 <style scoped>
+.base-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /*justify-content: center;*/
+}
+
 .memBar {
   background-color: gainsboro;
   box-shadow: 1px 0px 0px 0px inset;
@@ -255,6 +288,10 @@ export default {
   /* 动画向前填充模式保证动画结束后 @keyframes scrollToStart的100%节点的opacity覆盖 .driveItem的opacity */
   animation-fill-mode: forwards;
   opacity: 0;
+}
+
+:deep(div.ant-collapse-content-box) {
+  padding: 0px;
 }
 
 /* 滑到起点 */

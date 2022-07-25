@@ -28,9 +28,16 @@ export default {
     // 在这里 可以认为是 访问硬盘、文件夹（nodejs认为Windows的盘符也是 文件夹;
     // require('fs').statSync('C://').isDirectory() = true
     this.currentPath = window.localStorage.getItem('currentPath')
+    this.currentPath = this.currentPath ? this.currentPath : '\\';
     emitter.on('visitDirectory', path => {
       this.currentPath = path
     })
+    window.onpopstate = function (e) {
+      console.log(e)
+    }
+    window.onhashchange = function (hash) {
+      console.log(hash);
+    }
   },
   watch: {
     currentPath: {

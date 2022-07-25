@@ -16,9 +16,25 @@ export function convertToTreeData(data) {
   let len = dirNum + fileNum;
   let fileArray = new Array(len).fill("");
 
+  // 循环每一个文件夹
+  Array.from(data.directories).forEach((item, idx, arr) => {
+    fileArray[idx] = {
+      name: item.name,
+      children: [],
+      relPath: item.relPath,
+      comment: item.comment,
+      absPath: item.absPath,
+      tag: item.tag,
+      isFile: false,
+      isLeaf: false,
+    };
+    // 接着递归
+    fileArray[idx].children = convertToTreeData(item);
+  });
+
   // 循环每一个文件
   Array.from(data.files).forEach((item, idx, arr) => {
-    fileArray[idx] = {
+    fileArray[idx + dirNum] = {
       name: item.name,
       // children: [],
       relPath: item.relPath,
@@ -31,21 +47,15 @@ export function convertToTreeData(data) {
     };
   });
 
-  // 循环每一个文件夹
-  Array.from(data.directories).forEach((item, idx, arr) => {
-    fileArray[idx + fileNum] = {
-      name: item.name,
-      children: [],
-      relPath: item.relPath,
-      comment: item.comment,
-      absPath: item.absPath,
-      tag: item.tag,
-      isFile: false,
-      isLeaf: false,
-    };
-    // 接着递归
-    fileArray[idx + fileNum].children = convertToTreeData(item);
-  });
 
-  return fileArray.reverse();
+
+  // return fileArray.reverse();
+  return fileArray
+}
+
+/**
+ * 处理路径中的反斜杠，转化成正斜杠
+ */
+function reverseSeparation(path) {
+  return path.replaceAll('\\', '/')
 }
