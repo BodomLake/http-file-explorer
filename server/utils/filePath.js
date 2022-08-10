@@ -4,6 +4,8 @@
 var fs = require("fs");
 var path = require("path");
 const { cwd } = require("process");
+const iconExtractor = require("icon-extractor");
+
 // 是否在控制台打印出 树状结构
 var printTreeInConsole = false;
 // 忽略掉的选项
@@ -22,7 +24,7 @@ var ignoreSuffix = [
 	'sys', 'tmp'
 ]
 class File {
-	constructor(name, absPath, relPath, type, size, comment, tag) {
+	constructor(name, absPath, relPath, type, size, comment, tag, icon) {
 		this.name = name || "";
 		this.absPath = absPath || "";
 		this.relPath = relPath || "";
@@ -30,8 +32,11 @@ class File {
 		this.tag = tag || "";
 		this.size = size || 0;
 		this.type = type || "";
+		// 图标的icon Base64编码
+		this.icon = icon || "";
 	}
 }
+
 class Directory {
 	constructor(name, absPath, relPath, comment, tag) {
 		this.files = [];
@@ -162,6 +167,7 @@ function readContentSync(
 				file.size = stat.size;
 				// 如果名字可以用点分开，就去最后一部分作为文件类型
 				file.type = absPath.split(".").length > 1 ? absPath.split(".").slice(-1)[0] : "";
+
 				directory.addFile(file);
 			}
 		}
@@ -171,7 +177,7 @@ function readContentSync(
 }
 
 // readContentSync(__dirname, 10);
-// targetDirectory = readContentSync('d://', 1);
+targetDirectory = readContentSync('D:/', 1);
 // targetDirectory = readContentSync(__dirname, 10);
 // console.log(targetDirectory)
 module.exports = {

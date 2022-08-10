@@ -46,8 +46,10 @@ async function getPersonalFolders() {
     const userPrefix = 'C:\\users\\' + users[0].user + '\\';
     for (let i = 0; i < defaultFolderNames.length; i++) {
       try {
-        stat = fs.statSync(userPrefix + defaultFolderNames[i])
+        let path = userPrefix + defaultFolderNames[i]
+        stat = fs.statSync(path)
         stat.name = defaultFolderNames[i]
+        stat.path = path
         personalFolders.push(stat)
       } catch (exp) {
         console.log(exp);

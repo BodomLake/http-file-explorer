@@ -6,6 +6,14 @@ import Finder from "./components/macOS/Finder.vue";
 
 export default {
   name: 'app',
+  beforeCreate() {
+    console.log('app is going to start:')
+    // 开启hash路由模式
+    if (window.location.hash == '') {
+      window.location.hash = '/'
+    }
+    window.document.title = 'This PC'
+  },
   // 三种操作系统的文件浏览器，不同的客户端体验，根据实际操作系统的类型进行切换
   components: {
     Finder,

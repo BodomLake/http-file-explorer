@@ -57,6 +57,32 @@ router.get("/getRootDir", async (req, res, next) => {
 })
 
 /**
+ * 获取用户文件夹下面的桌面，ThisPC
+ *
+ */
+router.get("/getDesktopDir", async (req, res, next) => {
+  let users;
+  let targetDir;
+  await si.users().then(data => {
+    users = data;
+    // 默认选取第一个用户
+    const userPrefix = 'C:\\users\\' + users[0].user + '\\Desktop';
+    targetDir = readContentSync(userPrefix, 1);
+  })
+  res.json(targetDir || {})
+})
+
+/**
+ * 获取系统所有的用户名
+ */
+router.get("/getSystemUsers", async (req, res, next) => {
+  await si.users().then(data => {
+      res.json(data || [])
+    }
+  )
+})
+
+/**
  * 自己实现的 windows-cmd命令行标准输出，获取硬盘信息
  * 获取各个驱动盘
  */

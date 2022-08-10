@@ -1,5 +1,4 @@
 <template>
-
   <div class="row-layout" style="border-top: 1px solid #d9d9d9;">
     <div name="history" class="row-layout" style="flex-basis: 12vw">
       <!-- 上一站 -->
@@ -40,7 +39,9 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item v-for="(path, pi) in historyPaths" :key="pi">
-                  <a :href=" '/#/' + path.value.replaceAll('\\', '/')"> {{ path.label }}</a>
+                  <a :href=" '/#/' + path.value.replaceAll('\\', '/')">
+                    {{ path.label }}
+                  </a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -69,15 +70,20 @@
         <div class="address-border address-inner" @click="changeInputMode($event)">
           <div class="address-border address-inner">
 
-            <!-- 根路径下面的所有元素 ThisPC -->
-            <a-dropdown :trigger="['click']" @click="refreshRootDir">
-              <a-button class="button-limit" type="text">
+            <!-- 桌面下面的所有元素 ThisPC -->
+            <a-dropdown :trigger="['click']" @dbclick="getDesktopDir" class="nav-dropdown">
+              <div class="button-limit"
+                   style="padding-left: 8px; padding-right: 8px;display: flex;align-items: center">
                 <right-outlined :style="{fontSize: '12px', color: '#000000'}"/>
-              </a-button>
+              </div>
               <template #overlay>
-                <a v-for="item in rootDir" :href=" '/#/' + item.value.replaceAll('\\', '/')">
-                  {{ item.label }}
-                </a>
+                <a-menu>
+                  <a-menu-item v-for="item in rootDir">
+                    <a :href=" '/#/' + item.absPath.replaceAll('\\', '/')">
+                      {{ item.name }}
+                    </a>
+                  </a-menu-item>
+                </a-menu>
               </template>
             </a-dropdown>
 
@@ -86,13 +92,15 @@
               <div class="nav-unit">
                 <!-- 展示文本 -->
                 <div class="nav-text" @click="gotoDir(dirArr, dir, di)">
-                  {{ dir == '\\' ? 'ThisPC' : dir }}
+                  <div>{{ dir == '/' || dir == '\\' ? 'ThisPC' : dir }}</div>
+                  <!--{{ dir == '\\' ? 'ThisPC' : dir }}-->
                 </div>
                 <!-- 下拉文件菜单 -->
                 <a-dropdown :trigger="['click']" class="nav-dropdown">
-                  <a-button class="button-limit" style="padding-left: 8px; padding-right: 8px;" type="text">
+                  <div class="button-limit"
+                       style="padding-left: 8px; padding-right: 8px;display: flex;align-items: center">
                     <right-outlined :style="{fontSize: '12px', color: '#000000'}"/>
-                  </a-button>
+                  </div>
                   <template #overlay>
                     <a-menu>
                       <a-menu-item v-for="item in dropDownDirMenu[di]" :data-index="di" :key="di">
@@ -172,8 +180,9 @@ import {
   ArrowRightOutlined,
   RedoOutlined,
 } from '@ant-design/icons-vue';
-import emitter from "../../../bus.js";
+
 import {getReq} from "../../../utils/request.js";
+import {inject} from "vue";
 
 const historyDemo = [
   {
@@ -194,19 +203,26 @@ const historyDemo = [
   },
   {
     value: 'D:\\VS\\CS\\',
-    label: 'D:\\VS\\CS\\',
+    label: 'D:\\V\\CS\\',
   },
   {
-    value: 'D:\\Qt\\Tools\\',
+    value: 'D:/Qt/Tools/',
     label: 'D:\\Qt\\Tools\\',
   },
 ]
+
 export default {
   name: "Navigator",
   components: {
     UpOutlined, DownOutlined, LeftOutlined, RightOutlined,
     ArrowDownOutlined, ArrowUpOutlined, ArrowLeftOutlined, ArrowRightOutlined,
     RedoOutlined
+  },
+  setup() {
+    let currentPath = inject('currentPath')
+    return {
+      currentPath
+    }
   },
   data() {
     return {
@@ -217,24 +233,22 @@ export default {
       // 上级目录
       upperDir: '',
       // 当前目录的各层级
-      dirArr: ['\\'],
+      dirArr: ['/'],
       // 路由导航点击下拉，设计在dirArr没有变化的情况下，为每次点击请求更新
       dropDownDirMenu: [],
       // 面包屑导航箭头指向左侧文件夹下面所有的文件夹
       allDirectory: [
-        {value: 'D:\\VS', label: 'D:\\VS'},
+        {value: 'D:/VS', label: 'D:/VS'},
       ],
       // 历史路径(history),显示的时候显示元素的最后一层
       // 但凡是输入框点击或者输入的都记录到该数组中
       historyPaths: [
-        {value: 'D:\\VS', label: 'D:\\VS'},
-        {value: '\\', label: 'This PC'},
-        {value: 'D:\\TencentQQ', label: 'D:\\TencentQQ'},
-        {value: 'D:\\php', label: 'D:\\php'}
+        {value: 'D:/VS', label: 'D:/VS'},
+        {value: '/', label: 'This PC'},
+        {value: 'D:/TencentQQ', label: 'D:/TencentQQ'},
+        {value: 'D:/php', label: 'D:/php'}
       ],
-      rootDir: [
-        {value: '\\', label: 'This PC'},
-      ],
+      rootDir: [],
       editMode: false,
       // 输入框输入过的历史
       inputHistory: [
@@ -244,90 +258,56 @@ export default {
       isDropDown: false,
       // 按钮被点击
       dropDownBtnClk: false,
-      currentPath: '',
       // 正在输入的路径
       inputPath: '\\',
       kvMap: [
-        {k: 'This PC', v: '\\'},
-
+        {k: 'This PC', v: '/'},
       ],
     }
   },
   mounted() {
-    this.getRootDir();
-    let that = this;
-    window.onfocus = function () {
-      window.document.title = 'HTTP-File-Explorer'
-    }
-    window.onblur = function () {
-      // console.log(that.currentDir, that.dirArr)
-      if (that.currentDir == '\\') {
-        window.document.title = 'This PC';
-      } else {
-        window.document.title = that.currentDir;
-      }
-    }
-    emitter.on('visitCallBack', cb => {
-      console.log('visitCallBack', cb)
-      // 得到的回调结果显示正常，而且访问的还是文件夹，那么关闭编辑模式
-      this.editMode = false;
-    })
-    emitter.on('navBarPath', path => {
-      // this.currentPath = path;
-      let paths = path.split('\\');
-      if (paths.slice(-1)[0] == '') {
-        this.dirArr = paths.slice(0, paths.length - 1)
-      } else {
-        this.dirArr = paths
-      }
-      console.log(path, paths, this.dirArr)
-    })
-  },
-  computed: {
-    currentDir() {
-      return this.dirArr.slice(-1)[0]
-    }
+    this.getDesktopDir();
   },
   watch: {
-    dirArr: {
+    // 以currentPath的变化为中心
+    currentPath: {
       immediate: true,
       deep: false,
       handler: function (val, oldVal) {
-        // 结尾不加路径分割符'\\'
-        this.currentPath = val.join('\\')
-        this.refreshAllDropMenu()
-        console.log('dirArr changed', val, oldVal, this.currentDir)
-        window.document.title = val.slice(-1)[0]
+        // TODO 要加入防抖或者节流？
+        // let path = decodeURI(location.hash).split('#').slice(1)[0]
+        if (val == '/') {
+          this.dirArr = ['/']
+        } else {
+          this.dirArr = val.split('/').filter(item => item)
+        }
+        // 每次都重置输入框
+        this.inputPath = val.replaceAll('/', '\\')
+        this.refreshAllDropMenu(val, oldVal)
       },
     },
   },
-  emits: ['update:currentPath'],
   methods: {
     gotoDir(dirArr, dir, di) {
-      // 删掉被点击的目录后面的目录层级
-      this.dirArr.splice(di + 1, dirArr.length - di - 1)
-      console.log('gotoDir changed', this.dirArr, this.currentPath)
-      this.visitTarget(this.dirArr.join('\\'))
-      window.document.title = this.dirArr.slice(-1)[0]
+      console.log(dirArr)
+      let path = dirArr.slice(0, di + 1).join('/') + '/'
+      this.currentPath = path;
     },
-    getRootDir() {
-      getReq('/system/getRootDir').then(res => {
-        console.log('getRootDir', res.data)
+    getDesktopDir() {
+      getReq('/system/getDesktopDir').then(res => {
+        this.rootDir = res.data.directories
       })
     },
     // 更新所有的文件夹下面的菜单
-    refreshAllDropMenu() {
+    refreshAllDropMenu(newPathArr, oldPathArr) {
       // 如果是空的项目，就说明没有请求过的；改动
       this.dropDownDirMenu = new Array(this.dirArr.length).fill(undefined)
-      console.log('refreshAllDropMenu', this.dirArr)
-      if (this.dirArr.length == 1) {
-
-      } else {
+      console.log('更新输入框的下拉菜单，refreshAllDropMenu', this.dirArr)
+      if (this.currentPath != '/') {
         this.dirArr.forEach((dir, di, dirArr) => {
-          let path = dirArr.slice(0, di + 1).join('\\') + '\\'
-          console.log(path)
+          let path = dirArr.slice(0, di + 1).join('/') + '/'
           // 可以说每一层路由都请求了
-          getReq("/system/getDir", {absPath: path}).then(response => {
+          getReq("/system/getDir", {absPath: path, depthLimit: 1}).then(response => {
             // console.log(response.data.directories)
             this.dropDownDirMenu[di] = response.data.directories.map(d => {
               d.absPath.replaceAll('\\', '/')
@@ -335,12 +315,19 @@ export default {
             })
           })
         })
+      } else {
+        getReq("/system/getRootDir").then(response => {
+          // console.log(response.data.directories)
+          this.dropDownDirMenu[0] = []
+          response.data.drives.forEach(d => {
+            this.dropDownDirMenu[0].push({absPath: d.target, name: d.volumeName + ' ' + d.target})
+          })
+          response.data.folders.forEach(d => {
+            d.path.replaceAll('\\', '/')
+            this.dropDownDirMenu[0].push({absPath: d.path, name: d.name})
+          })
+        })
       }
-
-    },
-    // 更新
-    refreshRootDir() {
-
     },
     /**
      * 首先判断这是不是文件夹，还是文件
@@ -350,35 +337,10 @@ export default {
      * 错误的情况：<a-message> error/warning 给出提示
      */
     visitTarget(path) {
-      console.log('visitTarget', path)
-      this.inputPath = path
-      if (path == '\\') {
-        this.dirArr = ['\\']
-      } else {
-        this.dirArr = path.split('\\')
-      }
-      // 尝试发出请求到后端
-      getReq('/system/isDirectory', {absPath: path}).then(response => {
-        console.log(response.data)
-        if (response.data.status == 200) {
-          // 传输给 <Directory> 组件 或者 <ThisPC> 组件接受 信息
-          if (response.data.isDirectory) {
-            emitter.emit('visitDirectory', path)
-          } else {
-            // 传输给 解析相关文件的 <FileViewer>
-            emitter.emit('visitFile', path)
-          }
-          // 退出编辑模式
-          this.editMode = false;
-
-        } else {
-          console.error('读取错误', response.data.status)
-          // 出错了，退回去，全选文本方便用户编辑
-          this.selectAllText()
-        }
-      }).finally(() => {
-      })
-
+      console.log('visitTarget接收到输入：', path)
+      this.currentPath = path.replaceAll('\\', '/');
+      // input 是要显示在界面能上的，为了能够和windows的文件浏览器的表现一致，所以用反人类的反斜杠做路径分隔符
+      this.inputPath = path.replaceAll('/', '\\');
     },
     selectOneOption(value, option) {
       console.log(value, option)
@@ -393,9 +355,6 @@ export default {
       console.log(`selected ${value}`);
     },
     handleBlur($event) {
-      // $event.preventDefault()
-      // $event.stopPropagation()
-      // console.log('处理失焦的元素：', $event.target.tagName, this.dropDownBtnClk)
       // 要实现blur函数不干扰下拉功能
       setTimeout(() => {
         if (!this.dropDownBtnClk) {
@@ -415,14 +374,13 @@ export default {
     },
     // 切换到输入模式
     changeInputMode($event) {
-      // if($event.target)
-      // console.log('切换到输入模式', $event.target)
       if (Array.from($event.target.classList).includes('address-border')) {
         this.editMode = true;
-        // 盘符后面接 :/ 而不是 /，在视觉上要和Windows Explorer 保持一致
+        // 在视觉上要和Windows Explorer 保持一致
+
         this.inputPath = this.dirArr[0] + "\\" + this.dirArr.slice(1).join('\\')
-        if (this.dirArr.length == 1 && this.dirArr[0] == '\\') {
-          this.inputPath = '\\'
+        if (this.dirArr[0] == '/' || this.dirArr[0] == '\\') {
+          this.inputPath = "\\"
         }
         this.selectAllText()
       }
@@ -507,8 +465,8 @@ export default {
 }
 
 .nav-text {
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: 4px;
+  padding-right: 4px;
   cursor: pointer;
   height: 100%;
   display: flex;
@@ -516,7 +474,8 @@ export default {
 }
 
 .nav-dropdown {
-  box-sizing: border-box;
+  box-sizing: content-box;
+  cursor: pointer;
 }
 
 .nav-unit:hover {

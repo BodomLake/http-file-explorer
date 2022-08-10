@@ -1,3 +1,16 @@
+.extra-large-icons-box {
+  color: black;
+  height: calc(78vh / 3);
+  width: calc(78vw / 6);
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1rem;
+  transition: all ease-in-out 0.25s;
+  cursor: pointer;
+}
+
 .extra-large-icons-inner {
   height: 80%;
   width: 100%;
@@ -7,19 +20,13 @@
   transform: translate(-50%, -50%);
 }
 
-.extra-large-icons-box {
-  color: black;
-  height: calc(81vh / 3);
-  width: calc(80vw / 6);
-  display: flex;
-  justify-content: space-around;
-  flex-direction: column;
-  align-items: center;
-  font-size: 1.2rem;
+
+.extra-large-icons-box:hover {
+  background-color: rgba(255, 251, 143, 0.5);
 }
 
 .extra-large-icons-icon {
-  height: 85%;
+  height: 80%;
   margin: 0px auto;
   width: 80%;
   /*background-color: navajowhite;*/
@@ -33,20 +40,28 @@
 
 .extra-large-icons-text {
   vertical-align: middle;
-  height: 15%;
+  height: 20%;
   width: 90%;
-  white-space: nowrap;
   user-select: none;
   text-overflow: ellipsis;
   overflow: hidden;
   line-height: 200%;
+  /*white-space: nowrap;*/
+  /*text-overflow: ellipsis;*/
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
+
 /* 宽度控制 */
 @media screen and (max-width: 1920px) and (min-width: 1560px) {
   .extra-large-icons-box {
     color: black;
-    height: calc(81vh / 3);
-    width: calc(80vw / 6);
+    height: calc(78vh / 3);
+    /*width: calc(78vw / 6);*/
+    /*height: calc(100% / 3);*/
+    width: calc(100% / 6);
     width: 300px;
     display: flex;
     justify-content: space-around;
@@ -55,12 +70,14 @@
     font-size: 1.2rem;
   }
 }
+
 /* 宽度控制 */
 @media screen and (max-width: 1560px) and (min-width: 1200px) {
   .extra-large-icons-box {
     color: black;
-    height: calc(81vh / 4);
-    width: calc(80vw / 5);
+    /*height: calc(100% / 4);*/
+    height: calc(78vh / 4);
+    width: calc(100% / 5);
     display: flex;
     justify-content: space-around;
     flex-direction: column;
@@ -74,9 +91,11 @@
   .extra-large-icons-box {
     color: black;
     /* 一列最多3个并列 */
-    height: calc(81vh / 5);
+    height: calc(78vh / 5);
     /* 一行最多6个并行 */
-    width: calc(80vw / 8);
+    /*width: calc(78vw / 8);*/
+    /*height: calc(100% / 5);*/
+    width: calc(100% / 8);
     display: flex;
     justify-content: space-around;
     flex-direction: column;
@@ -90,9 +109,10 @@
   .extra-large-icons-box {
     color: black;
     /* 一列最多3个并列 */
-    height: calc(81vh / 6);
+    height: calc(78vh / 6);
     /* 一行最多6个并行 */
-    width: calc(80vw / 8);
+    /*width: calc(78vw / 8);*/
+    width: calc(100% / 8);
     display: flex;
     justify-content: space-around;
     flex-direction: column;

@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   message
 } from 'ant-design-vue';
+import Qs from 'qs';
 
 axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
 // 创建axios实例
@@ -10,6 +11,9 @@ const service = axios.create({
   baseURL: process.env.NODE_ENV === 'development' ? "/api" : "/",
   // 超时
   timeout: process.env.NODE_ENV === 'development' ? 20000 : 100000,
+/*  paramsSerializer: function(params) {//序列化请求参数，避免get请求参数出现&,空格等识别错误的问题
+    return Qs.stringify(params, {arrayFormat: 'brackets'})
+  },*/
 });
 
 // 请求拦截器

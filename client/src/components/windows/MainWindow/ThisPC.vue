@@ -1,13 +1,13 @@
 <template>
   <a-collapse v-model:activeKey="activeKey" style="opacity: 0.9">
-    <a-collapse-panel key="0" header="Folders">
+    <a-collapse-panel key="0" header="Folders" id="a">
       <template v-if="folderLoading">
-        <a-spin tip="正在获取用户文件夹...">
-        </a-spin>
+        <a-spin tip="正在获取用户文件夹..."></a-spin>
       </template>
       <template v-else>
         <div class="base-layout">
-          <div v-for="(fold, fi) in userFolders" class="extra-large-icons-box">
+          <div v-for="(folder, fi) in userFolders" class="extra-large-icons-box" @dblclick="gotoDir(folder)">
+            <!-- 内层图标 -->
             <div class="extra-large-icons-icon">
               <div class="extra-large-icons-inner">
                 <svg class="extra-large-icon" aria-hidden="true">
@@ -17,7 +17,7 @@
             </div>
             <!-- 内层文本 -->
             <div class="extra-large-icons-text">
-              {{ fold.name }}
+              {{ folder.name }}
             </div>
           </div>
         </div>
@@ -33,16 +33,15 @@
           <template #renderItem="{ item, index }">
             <a-list-item class="driveItem" :style="{animationDelay: index * 100 +'ms'}" @dblclick="enterToDrive(item)">
               <a-list-item-meta>
-
                 <template #avatar>
-                  <svg class="icon svg-icon" aria-hidden="true" style="width: 3rem;height: 3rem;margin: 0rem 1rem">
+                  <svg class="icon svg-icon" aria-hidden="true"
+                       style="width: 3rem;height: 3rem;margin: 0rem 1rem;cursor: pointer">
                     <use :xlink:href="'#' + 'icon-disk'"></use>
                   </svg>
                 </template>
-
                 <template #title>
                   <a-row>
-                    <a-col :span="16" style="text-align: left">
+                    <a-col :span="16" style="text-align: left;cursor: pointer">
                       {{ item.volumeName == '' ? fsTypeOption[parseInt(item.fstype)] : item.volumeName }}
                       {{ '(' + item.target + ')' }}
                     </a-col>
@@ -51,13 +50,10 @@
                     </a-col>
                   </a-row>
                 </template>
-
                 <template #description>
                   <a-row style="height: 20px">
-                    <a-col :span="16" class="memBar">
-                      <a-col :span="24" class="usedMemBar" :style="{ width: item.pcent,}">
-
-                      </a-col>
+                    <a-col :span="16" class="memBar" style="cursor: pointer;">
+                      <a-col :span="24" class="usedMemBar" :style="{ width: item.pcent,}"></a-col>
                     </a-col>
                     <a-col :span="8">
                       {{ convertToGBUnit(item.avail) }} GB free of {{ convertToGBUnit(item.size) }} GB
@@ -130,10 +126,9 @@
 
 <script>
 import {getReq} from "../../../utils/request.js";
-import Drive from "./Drive.js";
 import CPUs from '../Dialog/CPUs-setup.vue'
 import NetworkInterfaces from "../Dialog/NetworkInterfaces.vue";
-import './extra-large-icons.css'
+import './css/extra-large-icons.css'
 
 export default {
   name: "ThisPC",
@@ -222,14 +217,16 @@ export default {
       this.detail = this.system[item];
     },
     // 进入硬盘
-    enterToDrive(item, suffix) {
-      suffix = suffix || '//'
+    enterToDrive(item, separate) {
+      separate = separate || '/'
       console.log(item, item.target)
-      // this.currentPath = item.target + suffix
-      this.$emit('update:currentPath', item.target + suffix)
+      // history.push()
+      window.location.hash = separate + item.target.toUpperCase() + separate
+    },
+    gotoDir(folder) {
+      window.location.hash = '/' + folder.path.replace('\\', '/') + '/'
     }
   },
-  // emits: ['update:currentPath'],
 }
 </script>
 
@@ -291,9 +288,14 @@ export default {
 }
 
 :deep(div.ant-collapse-content-box) {
-  padding: 0px;
+  padding: 2px;
 }
 
+.ant-collapse-item :deep(div.ant-collapse-header){
+  padding: 4px 4px;
+  font-size: 1rem;
+  font-family: fantasy;
+}
 /* 滑到起点 */
 @keyframes scrollToStart {
   0% {
@@ -305,4 +307,6 @@ export default {
     opacity: 1;
   }
 }
+
+
 </style>

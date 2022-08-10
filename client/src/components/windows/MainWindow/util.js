@@ -48,7 +48,6 @@ export function convertToTreeData(data) {
   });
 
 
-
   // return fileArray.reverse();
   return fileArray
 }
@@ -58,4 +57,26 @@ export function convertToTreeData(data) {
  */
 function reverseSeparation(path) {
   return path.replaceAll('\\', '/')
+}
+
+/**
+ * 获取hash值后面的各个分段
+ */
+export function getHashSeg() {
+  let hash = decodeURI(window.location.hash).split('#')[1]
+  let segments = hash.split('/').filter(item => item)
+  console.log(hash, segments)
+  return segments;
+}
+
+/**
+ * 得到hash值对应的文件路径
+ */
+export function getPathFromHash() {
+  let segments = getHashSeg()
+  if (segments && segments.length == 0) {
+    return '/'
+  } else {
+    return segments.join('/')
+  }
 }

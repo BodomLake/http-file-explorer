@@ -18,7 +18,7 @@
 <script>
 
 
-import {defineComponent, ref} from 'vue';
+import {defineComponent, inject, ref} from 'vue';
 import {getReq} from "../../../utils/request";
 import MyIcon from "../../MyIcon.vue";
 import {convertToTreeData} from "../MainWindow/util.js";
@@ -30,9 +30,9 @@ export default defineComponent({
     const showIcon = ref(true);
     const multiple = ref(false);
     const treeData = ref([])
-    // console.log(props)
+    // console.log(inject('currentPath').value)
 
-    getReq("/system/getDir", {absPath: props.currentPath}).then((response) => {
+    getReq("/system/getDir", {absPath: inject('userDirPath').value}).then((response) => {
       treeData.value = convertToTreeData(response.data)
     });
     const loadDataAsync = (treeNode) => {
@@ -56,8 +56,8 @@ export default defineComponent({
             resolve()
           })
         }
-      }).catch(e=>{
-        console.log('/system/getDir',e);
+      }).catch(e => {
+        console.log('/system/getDir', e);
       })
     }
 
@@ -67,13 +67,6 @@ export default defineComponent({
       treeData,
       multiple,
       loadDataAsync
-    };
-  },
-  props: {
-    currentPath: {
-      type: String,
-      required: true,
-      default: '',
     }
   },
   data() {

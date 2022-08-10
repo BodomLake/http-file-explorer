@@ -1,11 +1,17 @@
 <template>
   <div class="base-layout">
+    <!-- 加载文件夹的提示 -->
     <template v-if="dirLoading">
-      <a-spin tip="文件夹正在读取中..."></a-spin>
+      <div style="width: 100%; height: 100%">
+        <a-spin tip="文件夹正在读取中..." size="large"></a-spin>
+      </div>
     </template>
+
     <template v-if="viewMode == 'Extra Large Icons'">
+
       <!-- 外层盒子 -->
-      <div v-for="(item, i) in itemList" class="extra-large-icons-box">
+      <div v-for="(item, i) in itemList" class="extra-large-icons-box" @dblclick="dblClickItem(item)">
+
         <!-- 内层图标 -->
         <div class="extra-large-icons-icon">
           <div class="extra-large-icons-inner">
@@ -21,10 +27,16 @@
             </template>
           </div>
         </div>
-        <!-- 内层文本 -->
-        <div class="extra-large-icons-text">
-          {{ item.name }}
-        </div>
+
+        <a-tooltip placement="bottom" :mouseEnterDelay=0.2 :mouseLeaveDelay=0.01>
+          <template #title>
+            <span>{{ item.name }}</span>
+          </template>
+          <!-- 内层文本 -->
+          <div class="extra-large-icons-text">
+            {{ item.name }}
+          </div>
+        </a-tooltip>
 
       </div>
     </template>
@@ -57,27 +69,66 @@
 // 默认指向ThisPC中的C盘(Windows系统)
 import {getReq} from "../../../utils/request.js";
 import {convertToTreeData} from "./util.js";
-import "./extra-large-icons.css";
-import "./large-icons.css";
+import "./css/extra-large-icons.css";
+import "./css/large-icons.css";
 import MyIcon from "../../MyIcon.vue";
-import emitter from "../../../bus.js";
+import {inject, ref, watch} from "vue";
 
 const defaultPath = 'C://'
 const viewModes = ['Extra Large Icons', "Large Icons", 'Medium Icons', 'Small Icons', 'List', 'Details', 'Tiles', 'Content']
 export default {
   name: "Directory",
-  props: {
-    currentPath: {
-      type: String,
-      default: '',
+  setup() {
+    let currentPath = inject('currentPath')
+    let itemList = ref([])
+    let dirLoading = ref(false)
+    // 接受MainWindow指导的路径变化，一旦有变化就要发起请求！
+    watch(currentPath, (newPath, oldPath) => {
+      if (currentPath != '/') {
+        dirLoading.value = true
+        getReq("/system/getDir", {absPath: decodeURI(currentPath.value), depthLimit: 1}).then((response) => {
+          itemList.value = convertToTreeData(response.data)
+        }).catch(err => {
+          // currentPath.value = oldPath
+          // 出错了，就返回上一个路由
+          // TODO 给出提示，为什么没有找到对应路径的内容？网络故障、权限问题、文件损坏？
+          // window.history.back()
+          // window.location.hash = '/'
+        }).finally(() => {
+          dirLoading.value = false
+        })
+      }
+      console.log("Directory.vue: watch 执行了", oldPath, '->', newPath)
+    }, {immediate: true, deep: true})
+
+    // 双击单个项目
+    function dblClickItem(item) {
+      console.log('点击文件夹', item)
+      if (!item.isFile) {
+        try {
+          currentPath.value = item.absPath.replaceAll('\\', '/')
+        } catch (e) {
+          // 路径出错？
+        } finally {
+          //
+        }
+      } else {
+
+      }
+      // window.history.pushState(item, '', item.absPath)
+    }
+
+    return {
+      currentPath,
+      itemList,
+      dirLoading,
+      dblClickItem
     }
   },
   data() {
     return {
       defaultPath: defaultPath,
       viewMode: viewModes[0],
-      dirLoading: false,
-      itemList: [],
     }
   },
   mounted() {
@@ -85,21 +136,7 @@ export default {
   components: {
     'MyIcon': MyIcon
   },
-  watch: {
-    // 接受MainWindow指导的路径变化，一旦有变化就要发起请求！
-    'currentPath': {
-      immediate: true,
-      handler: function (currentPath, oldPath) {
-        console.log(currentPath)
-        getReq("/system/getDir", {absPath: currentPath, depthLimit: 1}).then((response) => {
-          let itemList = convertToTreeData(response.data)
-          this.itemList = itemList;
-          console.log(currentPath, response.data, itemList)
-          emitter.emit('navBarPath', currentPath)
-        });
-      },
-    }
-  },
+  watch: {},
   methods: {},
 }
 </script>
